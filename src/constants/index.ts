@@ -29,7 +29,7 @@ export const API_LIST = {
   auth: {
     login: '/api/v1/student/auth/login',
   },
-  getMe: '/api/v1/student/me',
+  getMe: '/api/v1/student/students/me',
   season: '/api/v1/seasons',
   document: '/api/v1/documents',
   generalTask: '/api/v1/general-tasks',
@@ -37,7 +37,7 @@ export const API_LIST = {
   subject: '/api/v1/student/subjects',
   evaluation: '/api/v1/subjects/evaluations',
   evaluationQuestion: '/api/v1/subjects/evaluation-questions',
-  student: '/api/v1/students',
+  student: '/api/v1/student/students',
   registration: '/api/v1/student/subjects/registration',
   manageForm: '/api/v1/manage-form',
 }

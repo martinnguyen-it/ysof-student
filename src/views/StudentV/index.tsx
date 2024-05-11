@@ -5,7 +5,6 @@ import type { TableProps } from 'antd'
 
 import { FC, useEffect, useState } from 'react'
 import { isArray, isEmpty } from 'lodash'
-import dayjs from 'dayjs'
 import { PAGE_SIZE_OPTIONS_DEFAULT } from '@constants/index'
 import { IStudentInResponse } from '@domain/student'
 import { getListStudents } from '@src/services/student'
@@ -23,7 +22,7 @@ const StudentV: FC = () => {
   const [paging, setPaging] = useState({ total: 0, current: 1 })
   const [search, setSearch] = useState('')
   const [sort, setSort] = useState<ESort>()
-  const [sortBy, setSortBy] = useState<string>()
+  const [sortBy, setSortBy] = useState<string | undefined>('group')
   const [group, setGroup] = useState<number>()
 
   useEffect(() => {
@@ -56,7 +55,6 @@ const StudentV: FC = () => {
       dataIndex: 'group',
       key: 'group',
       sorter: true,
-      width: '80px',
     },
     {
       title: 'Họ tên',
@@ -74,26 +72,11 @@ const StudentV: FC = () => {
       dataIndex: 'sex',
       key: 'sex',
       sorter: true,
-      width: '110px',
-    },
-    {
-      title: 'Ngày sinh',
-      dataIndex: 'date_of_birth',
-      key: 'date_of_birth',
-      sorter: true,
-      render: (text) => <>{dayjs(text).format('DD-MM-YYYY')}</>,
-    },
-    {
-      title: 'Quê quán',
-      dataIndex: 'origin_address',
-      key: 'origin_address',
-      sorter: true,
     },
     {
       title: 'Giáo phận đang sinh hoạt',
       dataIndex: 'diocese',
       key: 'diocese',
-      width: '140px',
       sorter: true,
     },
     {
@@ -106,24 +89,6 @@ const StudentV: FC = () => {
       title: 'Số điện thoại',
       dataIndex: 'phone_number',
       key: 'phone_number',
-      sorter: true,
-    },
-    {
-      title: 'Học vấn',
-      dataIndex: 'education',
-      key: 'education',
-      sorter: true,
-    },
-    {
-      title: 'Nghề nghiệp',
-      dataIndex: 'job',
-      key: 'job',
-      sorter: true,
-    },
-    {
-      title: 'Ghi chú',
-      dataIndex: 'note',
-      key: 'note',
       sorter: true,
     },
   ]
@@ -194,7 +159,7 @@ const StudentV: FC = () => {
         pagination={false}
         dataSource={tableData}
         loading={isLoading}
-        scroll={{ x: 2000 }}
+        scroll={{ x: 1200 }}
         bordered
       />
     </div>
