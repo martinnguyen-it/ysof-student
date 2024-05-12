@@ -4,7 +4,7 @@ import { getCurrentSeason } from '@src/services/season'
 import { getMe } from '@src/services/student'
 import { isEmpty } from 'lodash'
 import React, { useEffect } from 'react'
-import { Navigate, Route, Routes, BrowserRouter } from 'react-router-dom'
+import { Navigate, Route, Routes, BrowserRouter, useLocation } from 'react-router-dom'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 export interface IRoute {
@@ -37,6 +37,8 @@ const RequiredLoginRoute = (props: { children: React.ReactNode }) => {
   const accessToken = useRecoilValue(accessTokenState)
   const setUserInfo = useSetRecoilState(userInfoState)
   const setCurrentSeason = useSetRecoilState(currentSeasonState)
+  const location = useLocation()
+
   useEffect(() => {
     if (accessToken)
       (async () => {
@@ -47,7 +49,7 @@ const RequiredLoginRoute = (props: { children: React.ReactNode }) => {
       })()
   }, [accessToken])
   if (!accessToken) {
-    return <Navigate to='/auth/login' replace />
+    return <Navigate to={`/auth/login?back_url=${location.pathname}`} replace />
   } else {
     return <>{props.children}</>
   }
