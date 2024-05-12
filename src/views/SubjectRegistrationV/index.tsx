@@ -72,9 +72,24 @@ const SubjectRegistrationV: FC = () => {
         )
       case EManageFormStatus.CLOSED:
         return (
-          <div className='mt-4 rounded-xl bg-white p-6 shadow-lg'>
-            <div className='text-center text-xl font-medium'>Form đã được đóng</div>
-          </div>
+          <>
+            <div className='mt-4 rounded-xl bg-white p-6 shadow-lg'>
+              <div className='text-center text-xl font-medium'>Form đã được đóng</div>
+            </div>
+            <div className='mt-4 rounded-xl bg-white p-6 shadow-lg'>
+              <div className='text-center text-lg font-medium'>Đây là danh sách chủ đề bạn đã đăng ký</div>
+              <div className='flex justify-center'>
+                <div className='mt-5'>
+                  {size(listSubject) > 0 &&
+                    listSubject.map((item) => (
+                      <p className='mb-1 break-words' key={item.id}>
+                        <span className='italic'>{dayjs(item.start_at).format('DD-MM-YYYY')}</span> - {item.code} - {item.title}
+                      </p>
+                    ))}
+                </div>
+              </div>
+            </div>
+          </>
         )
       case EManageFormStatus.ACTIVE:
         return (
