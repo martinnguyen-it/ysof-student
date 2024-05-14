@@ -7,16 +7,16 @@ import { ISubjectInResponse } from '@domain/subject'
 import { getListSubjects } from '@src/services/subject'
 import { useRecoilValue } from 'recoil'
 import { currentSeasonState } from '@atom/seasonAtom'
-import { EManageFormStatus, EManageFormType, IManageFormInResponse } from '@domain/manageForm'
+import { EManageFormStatus, EManageFormType } from '@domain/manageForm'
 import { getManageForm } from '@src/services/manageForm'
 import { getSubjectRegistration, postSubjectRegistration } from '@src/services/registration'
 import { toast } from 'react-toastify'
 
-const SubjectRegistrationV: FC = () => {
+const AbsentV: FC = () => {
   const [listSubject, setListSubject] = useState<ISubjectInResponse[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingSubmit, setIsLoadingSubmit] = useState(false)
-  const [dataForm, setDataForm] = useState<IManageFormInResponse>()
+  const [statusForm, setStatusForm] = useState<EManageFormStatus>()
   const [isUpdateForm, setIsUpdateForm] = useState(false)
   const currentSeason = useRecoilValue(currentSeasonState)
   const [value, setValue] = useState<string[]>([])
@@ -28,10 +28,10 @@ const SubjectRegistrationV: FC = () => {
   useEffect(() => {
     ;(async () => {
       setIsLoading(true)
-      const resForm = await getManageForm(EManageFormType.SUBJECT_REGISTRATION)
+      const resFormStatus = await getManageForm(EManageFormType.SUBJECT_REGISTRATION)
       const resSubjectRegistration = await getSubjectRegistration()
       const resSubjects = await getListSubjects({ season: currentSeason?.season || undefined })
-      if (!isEmpty(resForm)) setDataForm(resForm)
+      if (!isEmpty(resFormStatus)) setStatusForm(resFormStatus.status)
       if (resSubjectRegistration) {
         setIsUpdateForm(true)
         setValue(resSubjectRegistration.subjects_registration)
@@ -62,7 +62,7 @@ const SubjectRegistrationV: FC = () => {
   }
 
   const element: ReactNode = useMemo(() => {
-    switch (dataForm?.status) {
+    switch (statusForm) {
       case undefined:
       case EManageFormStatus.INACTIVE:
         return (
@@ -72,32 +72,22 @@ const SubjectRegistrationV: FC = () => {
         )
       case EManageFormStatus.CLOSED:
         return (
-          <>
-            <div className='mt-4 rounded-xl bg-white p-6 shadow-lg'>
-              <div className='text-center text-xl font-medium'>Form đã được đóng</div>
-            </div>
-            <div className='mt-4 rounded-xl bg-white p-6 shadow-lg'>
-              <div className='text-center text-lg font-medium'>Đây là danh sách chủ đề bạn đã đăng ký</div>
-              <div className='flex justify-center'>
-                <div className='mt-5'>
-                  {size(listSubject) > 0 &&
-                    listSubject.map((item) => (
-                      <p className='mb-1 break-words' key={item.id}>
-                        <span className='italic'>{dayjs(item.start_at).format('DD-MM-YYYY')}</span> - {item.code} - {item.title}
-                      </p>
-                    ))}
-                </div>
-              </div>
-            </div>
-          </>
+          <div className='mt-4 rounded-xl bg-white p-6 shadow-lg'>
+            <div className='text-center text-xl font-medium'>Form đã được đóng</div>
+          </div>
         )
       case EManageFormStatus.ACTIVE:
         return (
           <>
             <div className='rounded-xl bg-white p-6 shadow-lg'>
               <div className='flex justify-center text-2xl font-bold'>ĐĂNG KÝ MÔN HỌC - YSOF {currentSeason?.academic_year}</div>
-              <div className='mt-4 px-10'>
-                <p dangerouslySetInnerHTML={{ __html: dataForm?.data?.content }} />
+              <div className='px-10'>
+                Bạn thân mến,
+                <br />
+                YSOF thông báo đến bạn về việc đăng ký môn học của Trường Học Đức Tin Cho Người Trẻ - YSOF, niên khóa {currentSeason?.academic_year}.
+                <br />
+                Thời gian đăng ký: Từ khi ra thông báo tới 23:59 ngày 24/09/2024. Sau thời gian trên, form đăng ký sẽ được khóa và Ban Tổ Chức sẽ không nhận thêm bất cứ lượt đăng
+                ký nào của học viên. <br />
                 Nếu gặp trở ngại với đường link đăng ký môn học, bạn hãy phản hồi với chúng tôi qua địa chỉ email YSOF:{' '}
                 <a className='text-blue-500' href='mailto:ysofsj@gmail.com'>
                   ysofsj@gmail.com
@@ -137,7 +127,7 @@ const SubjectRegistrationV: FC = () => {
       default:
         return null
     }
-  }, [dataForm, value, error])
+  }, [statusForm, value, error])
 
   return (
     <div className='m-2 min-h-[calc(100vh-96px)] md:m-6'>
@@ -152,4 +142,4 @@ const SubjectRegistrationV: FC = () => {
   )
 }
 
-export default SubjectRegistrationV
+export default AbsentV

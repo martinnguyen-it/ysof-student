@@ -1,5 +1,5 @@
 import { DashboardOutlined, UserOutlined } from '@ant-design/icons'
-import { LessonIcon, RegisterIcon } from '@components/assets/svg'
+import { AbsentIcon, SubjectEvaluationIcon, LessonIcon, RegisterIcon } from '@components/assets/svg'
 import { IRouter } from '@domain/app'
 
 export const API_CONFIG = {
@@ -35,8 +35,8 @@ export const API_LIST = {
   generalTask: '/api/v1/general-tasks',
   lecturer: '/api/v1/student/lecturers',
   subject: '/api/v1/student/subjects',
-  evaluation: '/api/v1/subjects/evaluations',
-  evaluationQuestion: '/api/v1/subjects/evaluation-questions',
+  evaluation: '/api/v1/student/subjects/evaluations',
+  evaluationQuestion: '/api/v1/student/subjects/evaluation-questions',
   student: '/api/v1/student/students',
   registration: '/api/v1/student/subjects/registration',
   manageForm: '/api/v1/manage-form',
@@ -59,15 +59,19 @@ export const ROUTES_SIDEBAR: IRouter[] = [
     path: '/danh-sach-hoc-vien',
   },
   {
-    name: 'Chủ đề',
+    name: 'Danh sách chủ đề',
     icon: LessonIcon,
-    path: '/chu-de',
-    children: [
-      {
-        path: '/chu-de/danh-sach-chu-de',
-        name: 'Danh sách chủ đề',
-      },
-    ],
+    path: '/danh-sach-chu-de',
+  },
+  {
+    name: 'Lượng giá',
+    icon: SubjectEvaluationIcon,
+    path: '/luong-gia',
+  },
+  {
+    name: 'Xin nghỉ phép',
+    icon: AbsentIcon,
+    path: '/xin-nghi-phep',
   },
   {
     name: 'Đăng ký môn học',

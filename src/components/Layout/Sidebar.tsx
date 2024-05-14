@@ -81,7 +81,7 @@ const SidebarItem = ({ menuItem }: { menuItem: IRouter }) => {
             <div className='w-5' title={name}>
               {menuItem.icon && <menuItem.icon />}
             </div>
-            {isActive && !isCollapseSidebar ? <div className='absolute right-0 h-full w-[2px] bg-[#5776bf]' /> : null}
+            {isActive && !isCollapseSidebar ? <div className='absolute right-0 h-full w-[4px] bg-[#5776bf]' /> : null}
             {!isCollapseSidebar ? <span className={`text-md ml-3 whitespace-nowrap ${isActive ? 'text-[#1677ff]' : ''}`}>{name}</span> : null}
           </Link>
         </li>
@@ -115,7 +115,17 @@ const Sidebar = () => {
   return (
     <div className='fixed z-10 h-full bg-white shadow-lg transition-all duration-200 ease-out'>
       <div className={`${isCollapseSidebar ? 'w-14' : 'w-60'}`}>
-        <div className='flex h-12 items-center justify-center text-xl font-semibold text-black'>{!isCollapseSidebar ? 'YSOF' : null}</div>
+        <div className='flex h-12 items-center justify-center text-xl font-semibold text-black'>
+          <Link
+            onClick={() => {
+              setAppState((prev) => ({ ...prev, menuActive: '' }))
+            }}
+            to='/'
+            className='flex items-center gap-2'
+          >
+            <img alt='' className='size-8 rounded-md' src='/logo128.png' /> {!isCollapseSidebar ? 'YSOF' : null}
+          </Link>
+        </div>
         <ul className='max-h-[calc(100vh-146px)] overflow-auto border-gray-200'>
           <>
             {map(ROUTES_SIDEBAR, (route: IRouter) =>
