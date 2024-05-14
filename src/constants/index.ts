@@ -36,6 +36,7 @@ export const API_LIST = {
   lecturer: '/api/v1/student/lecturers',
   subject: '/api/v1/student/subjects',
   evaluation: '/api/v1/student/subjects/evaluations',
+  absent: '/api/v1/student/absent',
   evaluationQuestion: '/api/v1/student/subjects/evaluation-questions',
   student: '/api/v1/student/students',
   registration: '/api/v1/student/subjects/registration',

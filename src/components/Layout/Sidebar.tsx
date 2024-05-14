@@ -92,7 +92,6 @@ const SidebarItem = ({ menuItem }: { menuItem: IRouter }) => {
 
 const Sidebar = () => {
   const [{ isCollapseSidebar }, setAppState] = useRecoilState(appState)
-  console.log('🚀 ~ Sidebar ~ isCollapseSidebar:', isCollapseSidebar)
   const onShowSidebar = useCallback(() => {
     setAppState((prev: IAppState) => ({
       ...prev,

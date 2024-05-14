@@ -140,7 +140,7 @@ const SubjectRegistrationV: FC = () => {
   }, [dataForm, value, error])
 
   return (
-    <div className='m-2 min-h-[calc(100vh-96px)] md:m-6'>
+    <div className='mx-6 mt-6 min-h-[calc(100vh-96px)]'>
       {isLoading ? (
         <div className='mt-20 flex w-full justify-center'>
           <Spin size='large' />

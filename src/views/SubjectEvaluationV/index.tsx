@@ -53,7 +53,6 @@ const SubjectEvaluationV: FC = () => {
     try {
       await form.validateFields()
       const data = form.getFieldsValue()
-      console.log('🚀 ~ onSubmit ~ data:', data)
       let res: ISubjectEvaluationInResponse
       if (isUpdateForm) {
         res = await updateSubjectEvaluation(subject?.id || 'id', data)
