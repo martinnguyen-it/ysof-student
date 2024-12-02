@@ -1,8 +1,8 @@
-import { IStudentInResponse, IListStudentInResponse, IParamsGetListStudent } from '@domain/student'
+import { IStudentInResponse, IListStudentInResponse, IParamsGetListStudent, IStudentMeInResponse } from '@domain/student'
 import { get } from './HTTPService'
 import { API_LIST } from '@constants/index'
 
-export const getMe = async (): Promise<IStudentInResponse> => {
+export const getMe = async (): Promise<IStudentMeInResponse> => {
   const response = await get({
     url: API_LIST.getMe,
   })

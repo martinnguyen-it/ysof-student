@@ -1,4 +1,4 @@
-import { IStudentInResponse } from '@domain/student'
+import { IStudentMeInResponse } from '@domain/student'
 import { atom } from 'recoil'
 import { recoilPersist } from 'recoil-persist'
 
@@ -10,7 +10,7 @@ export const accessTokenState = atom<string>({
   effects_UNSTABLE: [persistAtom],
 })
 
-export const userInfoState = atom<IStudentInResponse>({
+export const userInfoState = atom<IStudentMeInResponse>({
   key: 'userInfo',
   default: undefined,
 })

@@ -1,4 +1,4 @@
-import { IStudentInResponse } from '@domain/student'
+import { IStudentMeInResponse } from '@domain/student'
 
 export interface ILoginRequest {
   email: string
@@ -7,5 +7,5 @@ export interface ILoginRequest {
 
 export interface ILoginResponse {
   access_token: string
-  user: IStudentInResponse
+  user: IStudentMeInResponse
 }

@@ -11,7 +11,19 @@ export interface IStudentInResponse {
   phone_number?: string
   avatar?: string
   id: string
+  season_info: IStudentSeasonInfo
 }
+
+export interface IStudentMeInResponse extends Omit<IStudentInResponse, 'season_info'> {
+  seasons_info: IStudentSeasonInfo[]
+}
+
+export interface IStudentSeasonInfo {
+  numerical_order: number
+  group: number
+  season: number
+}
+
 export interface IListStudentInResponse {
   pagination: IPaginationAPI
   data: IStudentInResponse[]

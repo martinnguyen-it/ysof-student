@@ -44,15 +44,17 @@ const StudentV: FC = () => {
   const columns: ColumnsType<IStudentInResponse> = [
     {
       title: 'MSHV',
-      dataIndex: 'numerical_order',
+      dataIndex: ['season_info', 'numerical_order'],
       key: 'numerical_order',
+      align: 'center',
       width: '80px',
       sorter: true,
       render: (text) => String(text).padStart(3, '0'),
     },
     {
       title: 'Nhóm',
-      dataIndex: 'group',
+      dataIndex: ['season_info', 'group'],
+      align: 'center',
       key: 'group',
       sorter: true,
     },
@@ -89,7 +91,6 @@ const StudentV: FC = () => {
       title: 'Số điện thoại',
       dataIndex: 'phone_number',
       key: 'phone_number',
-      sorter: true,
     },
   ]
 
@@ -101,7 +102,7 @@ const StudentV: FC = () => {
     setSearch(val)
   }
   const onChangeGroup = (val: string) => {
-    setGroup(Number(val))
+    setGroup(val ? Number(val) : undefined)
   }
 
   const handleTableChange: TableProps<IStudentInResponse>['onChange'] = (_pagination, _filters, sorter) => {
@@ -126,7 +127,7 @@ const StudentV: FC = () => {
           className='w-60'
           placeholder='Nhóm'
           size='large'
-          onSearch={onChangeGroup}
+          onChange={onChangeGroup}
           showSearch
           allowClear
         />

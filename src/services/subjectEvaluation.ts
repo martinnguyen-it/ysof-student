@@ -1,5 +1,5 @@
 import { accessTokenState } from '@atom/authAtom'
-import { get, post, serverErrorDataToString } from './HTTPService'
+import { get, post, patch, serverErrorDataToString } from './HTTPService'
 import { API_CONFIG, API_LIST } from '@constants/index'
 import { ICreateSubjectEvaluation, ISubjectEvaluationInResponse, IUpdateSubjectEvaluation } from '@domain/subjectEvaluation'
 import axios, { AxiosError } from 'axios'
@@ -52,7 +52,7 @@ export const createSubjectEvaluation = async (subjectId: string, data: ICreateSu
 }
 
 export const updateSubjectEvaluation = async (subjectId: string, data: IUpdateSubjectEvaluation): Promise<ISubjectEvaluationInResponse> => {
-  const response = await post({
+  const response = await patch({
     url: API_LIST.evaluation + '/' + subjectId,
     data,
   })
