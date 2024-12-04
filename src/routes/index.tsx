@@ -56,18 +56,21 @@ export const routes: IRoute[] = [
     path: '/dang-ky-hoc',
     element: <SubjectRegistrationV />,
     requiredLogin: true,
+    requiredCurrent: true,
     Layout: Layout,
   },
   {
     path: '/xin-nghi-phep',
     element: <AbsentV />,
     requiredLogin: true,
+    requiredCurrent: true,
     Layout: Layout,
   },
   {
     path: '/luong-gia',
     element: <SubjectEvaluationV />,
     requiredLogin: true,
+    requiredCurrent: true,
     Layout: Layout,
   },
   {

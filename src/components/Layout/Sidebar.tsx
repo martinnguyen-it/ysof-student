@@ -6,12 +6,14 @@ import { Link, useLocation } from 'react-router-dom'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { ROUTES_SIDEBAR } from '@constants/index'
 import { CaretUpOutlined, DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons'
-import { Tooltip } from 'antd'
+import { Select, Tooltip } from 'antd'
+import { currentSeasonState, selectSeasonState } from '@atom/seasonAtom'
+import { userInfoState } from '@atom/authAtom'
 
 const SidebarGroup = ({ menuItem, menuExpand, onExpandMenu }: { menuItem: IRouter; menuExpand?: string[]; onExpandMenu: (e: MouseEvent<HTMLLIElement>) => void }) => {
   const { isCollapseSidebar } = useRecoilValue(appState)
   const { pathname } = useLocation()
-  const { name, children, path } = menuItem
+  const { name, children, path, requiredCurrent } = menuItem
 
   const isExpandGroup = useMemo(() => {
     return menuExpand && menuExpand.includes(path)
@@ -21,39 +23,40 @@ const SidebarGroup = ({ menuItem, menuExpand, onExpandMenu }: { menuItem: IRoute
     return menuExpand && pathname.startsWith(path)
   }, [pathname])
 
-  return (
-    <>
-      <Tooltip placement='rightBottom' title={name}>
-        <li
-          className={`group relative flex w-full items-center text-base font-normal ${
-            isExpandGroup && isVisitedSubPage ? 'bg-[#E6F4FF] text-[#1677ff]' : 'text-black/60 hover:bg-[#E6F4FF] hover:text-[#1677ff] '
-          }`}
-          onClick={onExpandMenu}
-          data-item={path}
-        >
-          <div className={`just flex min-h-[48px] w-full items-center justify-between px-4 py-3 text-base`}>
-            <div className='flex items-center'>
-              <div className='w-5' title={name}>
-                {menuItem.icon && <menuItem.icon />}
-              </div>
+  const selectSeason = useRecoilValue(selectSeasonState)
+  const currentSeason = useRecoilValue(currentSeasonState)
 
-              <span className={`text-md ml-3 whitespace-nowrap`}>{!isCollapseSidebar ? name : null}</span>
+  return !(requiredCurrent && selectSeason !== currentSeason?.season) ? (
+    <Tooltip placement='rightBottom' title={name}>
+      <li
+        className={`group relative flex w-full items-center text-base font-normal ${
+          isExpandGroup && isVisitedSubPage ? 'bg-[#E6F4FF] text-[#1677ff]' : 'text-black/60 hover:bg-[#E6F4FF] hover:text-[#1677ff] '
+        }`}
+        onClick={onExpandMenu}
+        data-item={path}
+      >
+        <div className={`just flex min-h-[48px] w-full items-center justify-between px-4 py-3 text-base`}>
+          <div className='flex items-center'>
+            <div className='w-5' title={name}>
+              {menuItem.icon && <menuItem.icon />}
             </div>
-            {!isCollapseSidebar ? (
-              <span>
-                <CaretUpOutlined className={`${isExpandGroup ? 'rotate-180 duration-700' : 'rotate-0 duration-700'}`} />
-              </span>
-            ) : null}
+
+            <span className={`text-md ml-3 whitespace-nowrap`}>{!isCollapseSidebar ? name : null}</span>
           </div>
-        </li>
-        {isExpandGroup && !isCollapseSidebar && <ul>{size(children) > 0 && map(children, (item: IRouter) => <SidebarItem key={item.name} menuItem={item} />)}</ul>}
-      </Tooltip>
-    </>
-  )
+          {!isCollapseSidebar ? (
+            <span>
+              <CaretUpOutlined className={`${isExpandGroup ? 'rotate-180 duration-700' : 'rotate-0 duration-700'}`} />
+            </span>
+          ) : null}
+        </div>
+      </li>
+      {isExpandGroup && !isCollapseSidebar && <ul>{size(children) > 0 && map(children, (item: IRouter) => <SidebarItem key={item.name} menuItem={item} />)}</ul>}
+    </Tooltip>
+  ) : null
 }
 
 const SidebarItem = ({ menuItem }: { menuItem: IRouter }) => {
-  const { path, name } = menuItem
+  const { path, name, requiredCurrent } = menuItem
   const [{ isCollapseSidebar }, setAppState] = useRecoilState(appState)
   const { pathname } = useLocation()
 
@@ -65,29 +68,30 @@ const SidebarItem = ({ menuItem }: { menuItem: IRouter }) => {
     setAppState((prev: IAppState) => ({ ...prev, menuActive: name }))
   }
 
-  return (
-    <>
-      <Tooltip placement='rightBottom' title={name}>
-        <li
-          className={`group flex w-full items-center text-base font-normal text-black ${
-            isActive && !isCollapseSidebar ? 'bg-[#E6F4FF] text-[#1677ff]' : 'text-gray-400 hover:bg-[#E6F4FF]'
-          }`}
+  const selectSeason = useRecoilValue(selectSeasonState)
+  const currentSeason = useRecoilValue(currentSeasonState)
+
+  return !(requiredCurrent && selectSeason !== currentSeason?.season) ? (
+    <Tooltip placement='rightBottom' title={name}>
+      <li
+        className={`group flex w-full items-center text-base font-normal text-black ${
+          isActive && !isCollapseSidebar ? 'bg-[#E6F4FF] text-[#1677ff]' : 'text-gray-400 hover:bg-[#E6F4FF]'
+        }`}
+      >
+        <Link
+          to={path}
+          onClick={redirectUrl}
+          className={`relative flex min-h-[48px] w-full items-center px-4 py-3 text-base group-hover:text-[#1677ff] ${isActive ? 'text-[#1677ff]' : 'text-black/60'}`}
         >
-          <Link
-            to={path}
-            onClick={redirectUrl}
-            className={`relative flex min-h-[48px] w-full items-center px-4 py-3 text-base group-hover:text-[#1677ff] ${isActive ? 'text-[#1677ff]' : 'text-black/60'}`}
-          >
-            <div className='w-5' title={name}>
-              {menuItem.icon && <menuItem.icon />}
-            </div>
-            {isActive && !isCollapseSidebar ? <div className='absolute right-0 h-full w-[4px] bg-[#5776bf]' /> : null}
-            {!isCollapseSidebar ? <span className={`text-md ml-3 whitespace-nowrap ${isActive ? 'text-[#1677ff]' : ''}`}>{name}</span> : null}
-          </Link>
-        </li>
-      </Tooltip>
-    </>
-  )
+          <div className='w-5' title={name}>
+            {menuItem.icon && <menuItem.icon />}
+          </div>
+          {isActive && !isCollapseSidebar ? <div className='absolute right-0 h-full w-[4px] bg-[#5776bf]' /> : null}
+          {!isCollapseSidebar ? <span className={`text-md ml-3 whitespace-nowrap ${isActive ? 'text-[#1677ff]' : ''}`}>{name}</span> : null}
+        </Link>
+      </li>
+    </Tooltip>
+  ) : null
 }
 
 const Sidebar = () => {
@@ -111,6 +115,19 @@ const Sidebar = () => {
     })
   }, [])
 
+  const [selectSeason, setSelectSeason] = useRecoilState(selectSeasonState)
+  const userInfo = useRecoilValue(userInfoState)
+
+  const optionSeasons = useMemo(() => {
+    if (userInfo) {
+      return userInfo.seasons_info.map((item) => ({ value: item.season, label: item.season }))
+    }
+  }, [userInfo])
+
+  const handleChangeSeason = (val: string) => {
+    setSelectSeason(Number(val))
+  }
+
   return (
     <div className='fixed z-10 h-full bg-white shadow-lg transition-all duration-200 ease-out'>
       <div className={`${isCollapseSidebar ? 'w-14' : 'w-60'}`}>
@@ -124,6 +141,16 @@ const Sidebar = () => {
           >
             <img alt='' className='size-8 rounded-md' src='/logo128.png' /> {!isCollapseSidebar ? 'YSOF' : null}
           </Link>
+        </div>
+        <div className='flex h-12 items-center justify-center gap-4'>
+          {!isCollapseSidebar ? <span className='font-bold'>MÙA</span> : null}
+          <Select
+            value={(selectSeason && String(selectSeason)) || ''}
+            style={{ width: 50, textAlign: 'center' }}
+            onChange={handleChangeSeason}
+            options={optionSeasons}
+            suffixIcon={null}
+          />
         </div>
         <ul className='max-h-[calc(100vh-146px)] overflow-auto border-gray-200'>
           <>

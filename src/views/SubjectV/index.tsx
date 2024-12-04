@@ -10,6 +10,8 @@ import { ESubjectStatus, ISubjectInResponse } from '@domain/subject'
 import { getListSubjects } from '@src/services/subject'
 import { ESubjectStatusDetail, OPTIONS_SUBDIVISION, OPTIONS_SUBJECT_STATUS } from '@constants/subject'
 import ModalView from './ModalView'
+import { useRecoilValue } from 'recoil'
+import { selectSeasonState } from '@atom/seasonAtom'
 
 const SubjectV: FC = () => {
   const [openForm, setOpenForm] = useState<IOpenFormWithMode<ISubjectInResponse>>({ active: false, mode: 'view' })
@@ -21,17 +23,18 @@ const SubjectV: FC = () => {
   const [subdivision, setSubdivision] = useState<string>()
   const [sort, setSort] = useState<ESort>()
   const [sortBy, setSortBy] = useState<string>()
+  const season = useRecoilValue(selectSeasonState)
 
   useEffect(() => {
     ;(async () => {
       setIsLoading(true)
-      const data = await getListSubjects({ search, subdivision, status, sort, sort_by: sortBy })
+      const data = await getListSubjects({ search, subdivision, status, sort, sort_by: sortBy, season })
       if (!isEmpty(data) || isArray(data)) {
         setTableData(data)
       }
       setIsLoading(false)
     })()
-  }, [subdivision, search, status, sort, sortBy])
+  }, [subdivision, search, status, sort, sortBy, season])
 
   const columns: ColumnsType<ISubjectInResponse> = [
     {

@@ -8,6 +8,8 @@ import { isArray, isEmpty } from 'lodash'
 import { PAGE_SIZE_OPTIONS_DEFAULT } from '@constants/index'
 import { IStudentInResponse } from '@domain/student'
 import { getListStudents } from '@src/services/student'
+import { useRecoilValue } from 'recoil'
+import { selectSeasonState } from '@atom/seasonAtom'
 // import ModalView from './ModalView'
 
 const StudentV: FC = () => {
@@ -24,6 +26,7 @@ const StudentV: FC = () => {
   const [sort, setSort] = useState<ESort>()
   const [sortBy, setSortBy] = useState<string | undefined>('group')
   const [group, setGroup] = useState<number>()
+  const season = useRecoilValue(selectSeasonState)
 
   useEffect(() => {
     setTableQueries(initPaging)
@@ -32,14 +35,14 @@ const StudentV: FC = () => {
   useEffect(() => {
     ;(async () => {
       setIsLoading(true)
-      const res = await getListStudents({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search: search || undefined, sort, sort_by: sortBy, group })
+      const res = await getListStudents({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search: search || undefined, sort, sort_by: sortBy, group, season })
       if (!isEmpty(res)) {
         setTableData(res.data)
         setPaging({ current: res.pagination.page_index, total: res.pagination.total })
       }
       setIsLoading(false)
     })()
-  }, [tableQueries, search, sort, sortBy, group])
+  }, [tableQueries, search, sort, sortBy, group, season])
 
   const columns: ColumnsType<IStudentInResponse> = [
     {

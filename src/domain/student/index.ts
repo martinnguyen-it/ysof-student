@@ -32,6 +32,7 @@ export interface IListStudentInResponse {
 export interface IParamsGetListStudent extends IPaginationAPIParams, ISort {
   search?: string
   group?: number
+  season?: number
 }
 
 export enum ESex {

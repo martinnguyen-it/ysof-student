@@ -68,15 +68,23 @@ export const ROUTES_SIDEBAR: IRouter[] = [
     name: 'Lượng giá',
     icon: SubjectEvaluationIcon,
     path: '/luong-gia',
+    requiredCurrent: true,
   },
   {
     name: 'Xin nghỉ phép',
     icon: AbsentIcon,
     path: '/xin-nghi-phep',
+    requiredCurrent: true,
   },
+  // {
+  //   name: 'Giảng viên',
+  //   path: '/giang-vien',
+  //   icon: SolutionOutlined,
+  // },
   {
     name: 'Đăng ký môn học',
     icon: RegisterIcon,
     path: '/dang-ky-hoc',
+    requiredCurrent: true,
   },
 ]
