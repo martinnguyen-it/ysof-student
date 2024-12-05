@@ -4,18 +4,15 @@ import Table, { ColumnsType } from 'antd/es/table'
 import type { TableProps } from 'antd'
 
 import { FC, useEffect, useState } from 'react'
-import { isArray, isEmpty } from 'lodash'
-import { getListDocuments } from '@src/services/document'
+import { isArray } from 'lodash'
 import { EDocumentType, IDocumentInResponse } from '@domain/document'
 import { Link } from 'react-router-dom'
 import dayjs from 'dayjs'
 import { PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@constants/index'
 import { EDocumentTypeDetail, OPTIONS_DOCUMENT_LABEL, OPTIONS_DOCUMENT_TYPE } from '@constants/document'
+import { useGetListDocuments } from '@src/apis/documents/useQueryDocument'
 
 const DocumentV: FC = () => {
-  const [tableData, setTableData] = useState<IDocumentInResponse[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-
   const initPaging = {
     current: 1,
     pageSize: 20,
@@ -32,17 +29,13 @@ const DocumentV: FC = () => {
     setTableQueries(initPaging)
   }, [search])
 
+  const { data, isLoading } = useGetListDocuments({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search, type, label, sort, sort_by: sortBy })
+
   useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-      const res = await getListDocuments({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search, type, label, sort, sort_by: sortBy })
-      if (!isEmpty(res)) {
-        setTableData(res.data)
-        setPaging({ current: res.pagination.page_index, total: res.pagination.total })
-      }
-      setIsLoading(false)
-    })()
-  }, [tableQueries, search, type, label, sort, sortBy])
+    if (data) {
+      setPaging({ current: data.pagination.page_index, total: data.pagination.total })
+    }
+  }, [data])
 
   const columns: ColumnsType<IDocumentInResponse> = [
     {
@@ -155,7 +148,7 @@ const DocumentV: FC = () => {
         className='text-wrap'
         rowKey='id'
         pagination={false}
-        dataSource={tableData}
+        dataSource={data?.data || []}
         loading={isLoading}
         scroll={{ x: 1500 }}
         bordered

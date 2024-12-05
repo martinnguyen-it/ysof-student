@@ -1,93 +1,70 @@
 import { Button, Divider, Form, Input, Spin } from 'antd'
 
-import { FC, ReactNode, useEffect, useMemo, useReducer, useState } from 'react'
+import { FC, ReactNode, useEffect, useMemo } from 'react'
 import { isEmpty } from 'lodash'
 import dayjs from 'dayjs'
-import { ISubjectInResponse } from '@domain/subject'
-import { getSubjectDetail } from '@src/services/subject'
 import { EManageFormStatus, EManageFormType } from '@domain/manageForm'
-import { getManageForm } from '@src/services/manageForm'
 import { toast } from 'react-toastify'
-import { createSubjectAbsent, deleteSubjectAbsent, getSubjectAbsentNotHandler, updateSubjectAbsent } from '@src/services/subjectAbsent'
-import { ISubjectAbsentInResponse } from '@domain/subjectAbsent'
+import { useGetManageForm } from '@src/apis/manageForm/useQueryManageForm'
+import { useGetSubjectAbsentBySubjectId } from '@src/apis/subjectAbsent/useQuerySubjectAbsent'
+import { useGetSubjectDetail } from '@src/apis/subject/useQuerySubject'
+import { useCreateSubjectAbsent, useDeleteSubjectAbsent, useUpdateSubjectAbsent } from '@src/apis/subjectAbsent/useMutationSubjectAbsent'
 
-const SubjectEvaluationV: FC = () => {
+const SubjectAbsentV: FC = () => {
   const [form] = Form.useForm()
-  const [subject, setSubject] = useState<ISubjectInResponse>()
-  const [isLoading, setIsLoading] = useState(false)
-  const [isLoadingSubmit, setIsLoadingSubmit] = useState(false)
-  const [isLoadingDelete, setIsLoadingDelete] = useState(false)
-  const [statusForm, setStatusForm] = useState<EManageFormStatus>()
-  const [isUpdateForm, setIsUpdateForm] = useState(false)
-  const [reloadData, setReloadData] = useReducer((prev) => !prev, false)
+
+  const { data: dataForm, isFetched, isLoading: isLoadingManageForm } = useGetManageForm(EManageFormType.SUBJECT_ABSENT)
+  const { data: dataSubject, isLoading: isLoadingSubject } = useGetSubjectDetail(
+    dataForm?.data?.subject_id,
+    isFetched && dataForm?.status !== EManageFormStatus.CLOSED && !!dataForm?.data?.subject_id,
+  )
+  const { data: dataSubjectAbsent, isLoading: isLoadingAbsent } = useGetSubjectAbsentBySubjectId({
+    id: dataForm?.data?.subject_id,
+    enabled: isFetched && dataForm?.status !== EManageFormStatus.CLOSED && !!dataForm?.data?.subject_id,
+    isToastError: false,
+  })
+
+  const isUpdateForm = !!dataSubjectAbsent
 
   useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-      const resForm = await getManageForm(EManageFormType.SUBJECT_EVALUATION)
-      if (!isEmpty(resForm)) {
-        setStatusForm(resForm.status)
-        if (resForm?.data && resForm?.data?.subject_id) {
-          const resSubject = await getSubjectDetail(resForm.data.subject_id)
-          if (!isEmpty(resSubject)) setSubject(resSubject)
-          const dataUpdate = await getSubjectAbsentNotHandler(resForm.data.subject_id)
-          if (!isEmpty(dataUpdate)) {
-            form.setFieldsValue(dataUpdate)
-            setIsUpdateForm(true)
-          }
-        }
-      }
+    if (!isEmpty(dataSubjectAbsent)) {
+      form.setFieldsValue(dataSubjectAbsent)
+    }
+  }, [dataSubjectAbsent])
 
-      setIsLoading(false)
-    })()
-  }, [reloadData])
+  const onSuccess = () => {
+    if (isUpdateForm) toast.success('Sửa thành công')
+    else toast.success('Thêm thành công')
+  }
+
+  const { mutate: mutateCreate, isPending: isPendingCreate } = useCreateSubjectAbsent(onSuccess)
+  const { mutate: mutateUpdate, isPending: isPendingUpdate } = useUpdateSubjectAbsent(onSuccess)
 
   const onSubmit = async () => {
-    setIsLoadingSubmit(true)
     try {
       await form.validateFields()
       const data = form.getFieldsValue()
-      let res: ISubjectAbsentInResponse
       if (isUpdateForm) {
-        res = await updateSubjectAbsent(subject?.id || 'id', data)
-        if (!isEmpty(res)) {
-          toast.success('Sửa thành công')
-          setReloadData()
-        }
+        mutateUpdate({ subjectId: dataSubject?.id || '', data })
       } else {
-        res = await createSubjectAbsent(subject?.id || 'id', data)
-        if (!isEmpty(res)) {
-          toast.success('Thêm thành công')
-          setReloadData()
-        }
+        mutateCreate({ subjectId: dataSubject?.id || '', data })
       }
-    } catch (error) {
-      setIsLoadingSubmit(false)
+    } catch {
+      /* empty */
     }
-    setIsLoadingSubmit(false)
   }
 
-  const onDeleteAbsent = async () => {
-    setIsLoadingDelete(true)
-    if (subject) {
-      try {
-        const res = await deleteSubjectAbsent(subject.id)
-        if (res) {
-          toast.success('Xóa thành công')
-          form.resetFields()
-          setIsUpdateForm(false)
-        }
-      } catch (error) {
-        setIsLoadingDelete(false)
-      }
-    } else {
-      toast.error('Môn học không hợp lệ')
-    }
-    setIsLoadingDelete(false)
+  const onSuccessDelete = () => {
+    toast.success('Xóa thành công')
+    form.resetFields()
+  }
+  const { mutate: mutateDelete, isPending: isPendingDelete } = useDeleteSubjectAbsent(onSuccessDelete)
+  const onDeleteAbsent = () => {
+    mutateDelete(dataSubject?.id || '')
   }
 
   const element: ReactNode = useMemo(() => {
-    switch (statusForm) {
+    switch (dataForm?.status) {
       case undefined:
       case EManageFormStatus.INACTIVE:
         return (
@@ -105,15 +82,15 @@ const SubjectEvaluationV: FC = () => {
         return (
           <div className='flex w-full justify-center'>
             <div className='rounded-xl bg-white px-10 py-6 shadow-lg lg:w-10/12 xl:w-[70%]'>
-              <div className='flex justify-center text-2xl font-bold'>FORM NGHỈ PHÉP BUỔI HỌC {subject?.code}</div>
+              <div className='flex justify-center text-2xl font-bold'>FORM NGHỈ PHÉP BUỔI HỌC {dataSubject?.code}</div>
               <div className='mt-5'>
-                Chủ đề: <span className='font-medium uppercase'>{subject?.title}</span>
+                Chủ đề: <span className='font-medium uppercase'>{dataSubject?.title}</span>
                 <br />
                 Giảng Viên:{' '}
                 <span className='font-medium italic'>
-                  {subject?.lecturer?.title ? subject?.lecturer.title + ' ' : ''}
-                  {subject?.lecturer?.holy_name ? subject?.lecturer.holy_name + ' ' : ''}
-                  {subject?.lecturer.full_name}
+                  {dataSubject?.lecturer?.title ? dataSubject?.lecturer.title + ' ' : ''}
+                  {dataSubject?.lecturer?.holy_name ? dataSubject?.lecturer.holy_name + ' ' : ''}
+                  {dataSubject?.lecturer.full_name}
                 </span>
                 <div className='mt-3 flex flex-col gap-1 text-sm'>
                   <p>
@@ -123,8 +100,8 @@ const SubjectEvaluationV: FC = () => {
                   <p>Lưu ý:</p>
                   <p>1. Cách thức xin nghỉ học có phép hợp lệ là bằng cách điền form này. Mọi cách thức khác đều không hợp lệ.</p>
                   <p>
-                    2. Hạn chót tiếp nhận: <span className='font-medium'>12 giờ trưa thứ 7 ngày {subject ? dayjs(subject.start_at).format('DD-MM-YYYY') : null}</span>. Sau thời
-                    gian này, form sẽ tự động đóng lại và BTC không ghi nhận thêm. Vì thế, các bạn cần chủ động sắp xếp thời gian để điền form.
+                    2. Hạn chót tiếp nhận: <span className='font-medium'>12 giờ trưa thứ 7 ngày {dataSubject ? dayjs(dataSubject.start_at).format('DD-MM-YYYY') : null}</span>. Sau
+                    thời gian này, form sẽ tự động đóng lại và BTC không ghi nhận thêm. Vì thế, các bạn cần chủ động sắp xếp thời gian để điền form.
                   </p>
                   <p>
                     3. Trong trường hợp bạn đã điền form nhưng sau đó có thể sắp xếp để tham dự buổi học, vui lòng báo lại cho BTC qua mail{' '}
@@ -140,7 +117,7 @@ const SubjectEvaluationV: FC = () => {
                 </div>
               </div>
               <Divider />
-              <Form layout='vertical' form={form} name='form-subject-absent'>
+              <Form layout='vertical' form={form} name='form-dataSubject-absent'>
                 <Form.Item
                   name={'reason'}
                   label={'Bạn có thể chia sẻ cho BTC biết lý do bạn không thể tham dự buổi học này không?'}
@@ -155,11 +132,11 @@ const SubjectEvaluationV: FC = () => {
                 </Form.Item>
               </Form>
               <div className='flex gap-3'>
-                <Button type='primary' className={`${isUpdateForm ? 'bg-green-600 hover:!bg-green-500/80' : ''}`} onClick={onSubmit} loading={isLoadingSubmit}>
+                <Button type='primary' className={`${isUpdateForm ? 'bg-green-600 hover:!bg-green-500/80' : ''}`} onClick={onSubmit} loading={isPendingCreate || isPendingUpdate}>
                   {isUpdateForm ? 'Sửa' : 'Gửi'}
                 </Button>
                 {isUpdateForm ? (
-                  <Button type='primary' className='!bg-red-600 hover:!bg-red-600/80' onClick={onDeleteAbsent} loading={isLoadingDelete}>
+                  <Button type='primary' className='!bg-red-600 hover:!bg-red-600/80' onClick={onDeleteAbsent} loading={isPendingDelete}>
                     Xóa
                   </Button>
                 ) : null}
@@ -170,11 +147,11 @@ const SubjectEvaluationV: FC = () => {
       default:
         return null
     }
-  }, [statusForm, isUpdateForm, subject])
+  }, [dataForm, isUpdateForm, dataSubject])
 
   return (
     <div className='m-2 md:m-6'>
-      {isLoading ? (
+      {isLoadingManageForm || isLoadingSubject || isLoadingAbsent ? (
         <div className='mt-20 flex justify-center'>
           <Spin size='large' />
         </div>
@@ -185,4 +162,4 @@ const SubjectEvaluationV: FC = () => {
   )
 }
 
-export default SubjectEvaluationV
+export default SubjectAbsentV

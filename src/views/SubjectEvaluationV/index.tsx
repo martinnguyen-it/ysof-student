@@ -1,80 +1,69 @@
 import { Button, Divider, Form, Input, InputNumber, Radio, Spin } from 'antd'
 
-import { FC, ReactNode, useEffect, useMemo, useReducer, useState } from 'react'
-import { isEmpty, map } from 'lodash'
+import { FC, ReactNode, useEffect, useMemo } from 'react'
+import { isEmpty, map, size } from 'lodash'
 import dayjs from 'dayjs'
-import { ISubjectInResponse } from '@domain/subject'
-import { getSubjectDetail } from '@src/services/subject'
 import { EManageFormStatus, EManageFormType } from '@domain/manageForm'
-import { getManageForm } from '@src/services/manageForm'
 import { EVALUATION_QUALITY } from '@constants/subjectEvaluation'
-import { EQualityValue, ISubjectEvaluationInResponse } from '@domain/subjectEvaluation'
-import { createSubjectEvaluation, getSubjectEvaluationNotHandler, updateSubjectEvaluation } from '@src/services/subjectEvaluation'
+import { EQualityValue } from '@domain/subjectEvaluation'
 import { toast } from 'react-toastify'
-import { getSubjectEvaluationQuestionsNotHandler } from '@src/services/subjectEvaluationQuestion'
-import { IEvaluationQuestionItem } from '@domain/subjectEvaluationQuestion'
 import InputByType from '@components/InputByType'
+import { useGetManageForm } from '@src/apis/manageForm/useQueryManageForm'
+import { useGetSubjectDetail } from '@src/apis/subject/useQuerySubject'
+import { useGetSubjectEvaluationBySubjectId } from '@src/apis/subjectEvaluation/useQuerySubjectEvaluation'
+import { useCreateSubjectEvaluation, useUpdateSubjectEvaluation } from '@src/apis/subjectEvaluation/useMutationSubjectEvaluation'
+import { useGetSubjectEvaluationQuestions } from '@src/apis/subjectEvaluationQuestion/useQuerySubjectEvaluationQuestion'
 
 const SubjectEvaluationV: FC = () => {
   const [form] = Form.useForm()
-  const [subject, setSubject] = useState<ISubjectInResponse>()
-  const [subjectEvaluationQuestion, setSubjectEvaluationQuestion] = useState<IEvaluationQuestionItem[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [isLoadingSubmit, setIsLoadingSubmit] = useState(false)
-  const [statusForm, setStatusForm] = useState<EManageFormStatus>()
-  const [isUpdateForm, setIsUpdateForm] = useState(false)
-  const [reloadData, setReloadData] = useReducer((prev) => !prev, false)
+
+  const { data: dataForm, isFetched, isLoading: isLoadingManageForm } = useGetManageForm(EManageFormType.SUBJECT_EVALUATION)
+  const { data: dataSubject, isLoading: isLoadingSubject } = useGetSubjectDetail(
+    dataForm?.data?.subject_id,
+    isFetched && dataForm?.status !== EManageFormStatus.CLOSED && !!dataForm?.data?.subject_id,
+  )
+  const { data: dataSubjectEvaluation, isLoading: isLoadingEvaluation } = useGetSubjectEvaluationBySubjectId({
+    subjectId: dataForm?.data?.subject_id,
+    enabled: isFetched && dataForm?.status !== EManageFormStatus.CLOSED && !!dataForm?.data?.subject_id,
+    isToastError: false,
+  })
+  const { data: dataSubjectEvaluationQuestions, isLoading: isLoadingEvaluationQuestions } = useGetSubjectEvaluationQuestions({
+    subjectId: dataForm?.data?.subject_id,
+    enabled: isFetched && dataForm?.status !== EManageFormStatus.CLOSED && !!dataForm?.data?.subject_id,
+    isToastError: false,
+  })
+
+  const isUpdateForm = !!dataSubjectEvaluation
 
   useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-      const resForm = await getManageForm(EManageFormType.SUBJECT_EVALUATION)
-      if (!isEmpty(resForm)) {
-        setStatusForm(resForm.status)
-        if (resForm?.data && resForm?.data?.subject_id) {
-          const resSubject = await getSubjectDetail(resForm.data.subject_id)
-          if (!isEmpty(resSubject)) setSubject(resSubject)
-          const resEvaluationQuestions = await getSubjectEvaluationQuestionsNotHandler(resForm.data.subject_id)
-          if (!isEmpty(resEvaluationQuestions)) setSubjectEvaluationQuestion(resEvaluationQuestions.questions)
-          const dataUpdate = await getSubjectEvaluationNotHandler(resForm.data.subject_id)
-          if (!isEmpty(dataUpdate)) {
-            form.setFieldsValue(dataUpdate)
-            setIsUpdateForm(true)
-          }
-        }
-      }
+    if (!isEmpty(dataSubjectEvaluation)) {
+      form.setFieldsValue(dataSubjectEvaluation)
+    }
+  }, [dataSubjectEvaluation])
 
-      setIsLoading(false)
-    })()
-  }, [reloadData])
+  const onSuccess = () => {
+    if (isUpdateForm) toast.success('Sửa thành công')
+    else toast.success('Thêm thành công')
+  }
+
+  const { mutate: mutateCreate, isPending: isPendingCreate } = useCreateSubjectEvaluation(onSuccess)
+  const { mutate: mutateUpdate, isPending: isPendingUpdate } = useUpdateSubjectEvaluation(onSuccess)
 
   const onSubmit = async () => {
-    setIsLoadingSubmit(true)
     try {
       await form.validateFields()
       const data = form.getFieldsValue()
-      let res: ISubjectEvaluationInResponse
       if (isUpdateForm) {
-        res = await updateSubjectEvaluation(subject?.id || 'id', data)
-        if (!isEmpty(res)) {
-          toast.success('Sửa thành công')
-          setReloadData()
-        }
+        mutateUpdate({ subjectId: dataSubject?.id || '', data })
       } else {
-        res = await createSubjectEvaluation(subject?.id || 'id', data)
-        if (!isEmpty(res)) {
-          toast.success('Thêm thành công')
-          setReloadData()
-        }
+        mutateCreate({ subjectId: dataSubject?.id || '', data })
       }
-    } catch (error) {
-      setIsLoadingSubmit(false)
+    } catch {
+      /* empty */
     }
-    setIsLoadingSubmit(false)
   }
-
   const element: ReactNode = useMemo(() => {
-    switch (statusForm) {
+    switch (dataForm?.status) {
       case undefined:
       case EManageFormStatus.INACTIVE:
         return (
@@ -92,18 +81,18 @@ const SubjectEvaluationV: FC = () => {
         return (
           <div className='flex w-full justify-center'>
             <div className='rounded-xl bg-white px-10 py-6 shadow-lg lg:w-10/12 xl:w-[70%]'>
-              <div className='flex justify-center text-2xl font-bold'>{subject?.code} - LƯỢNG GIÁ MÔN HỌC</div>
+              <div className='flex justify-center text-2xl font-bold'>{dataSubject?.code} - LƯỢNG GIÁ MÔN HỌC</div>
               <div className='mt-5'>
-                Chủ đề: <span className='font-medium uppercase'>{subject?.title}</span>
+                Chủ đề: <span className='font-medium uppercase'>{dataSubject?.title}</span>
                 <br />
                 Giảng Viên:{' '}
                 <span className='font-medium italic'>
-                  {subject?.lecturer?.title ? subject?.lecturer.title + ' ' : ''}
-                  {subject?.lecturer?.holy_name ? subject?.lecturer.holy_name + ' ' : ''}
-                  {subject?.lecturer.full_name}
+                  {dataSubject?.lecturer?.title ? dataSubject?.lecturer.title + ' ' : ''}
+                  {dataSubject?.lecturer?.holy_name ? dataSubject?.lecturer.holy_name + ' ' : ''}
+                  {dataSubject?.lecturer.full_name}
                 </span>
                 <br />
-                Hạn nộp: 23h59 - Thứ hai, ngày {dayjs(subject?.start_at).add(2, 'day').format('DD/MM/YYYY')}
+                Hạn nộp: 23h59 - Thứ hai, ngày {dayjs(dataSubject?.start_at).add(2, 'day').format('DD/MM/YYYY')}
                 <br />
                 <br />
                 Mong bạn làm lượng giá bằng cả trái tim,
@@ -191,11 +180,9 @@ const SubjectEvaluationV: FC = () => {
                 >
                   <Input.TextArea />
                 </Form.Item>
-                {map(subjectEvaluationQuestion, (item, idx) => (
-                  <InputByType key={idx} index={idx} {...item} />
-                ))}
+                {size(dataSubjectEvaluationQuestions?.questions) && map(dataSubjectEvaluationQuestions?.questions, (item, idx) => <InputByType key={idx} index={idx} {...item} />)}
               </Form>
-              <Button type='primary' onClick={onSubmit} loading={isLoadingSubmit}>
+              <Button type='primary' onClick={onSubmit} loading={isPendingCreate || isPendingUpdate}>
                 {isUpdateForm ? 'Sửa' : 'Gửi'}
               </Button>
             </div>
@@ -204,11 +191,11 @@ const SubjectEvaluationV: FC = () => {
       default:
         return null
     }
-  }, [statusForm, isUpdateForm, subject, subjectEvaluationQuestion])
+  }, [dataForm, isUpdateForm, dataSubject, dataSubjectEvaluationQuestions])
 
   return (
     <div className='m-2 md:m-6'>
-      {isLoading ? (
+      {isLoadingManageForm || isLoadingSubject || isLoadingEvaluation || isLoadingEvaluationQuestions ? (
         <div className='mt-20 flex justify-center'>
           <Spin size='large' />
         </div>

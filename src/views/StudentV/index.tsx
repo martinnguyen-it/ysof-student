@@ -7,15 +7,12 @@ import { FC, useEffect, useState } from 'react'
 import { isArray, isEmpty } from 'lodash'
 import { PAGE_SIZE_OPTIONS_DEFAULT } from '@constants/index'
 import { IStudentInResponse } from '@domain/student'
-import { getListStudents } from '@src/services/student'
 import { useRecoilValue } from 'recoil'
 import { selectSeasonState } from '@atom/seasonAtom'
+import { useGetListStudents } from '@src/apis/student/useQueryStudent'
 // import ModalView from './ModalView'
 
 const StudentV: FC = () => {
-  const [tableData, setTableData] = useState<IStudentInResponse[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-
   const initPaging = {
     current: 1,
     pageSize: 20,
@@ -28,21 +25,25 @@ const StudentV: FC = () => {
   const [group, setGroup] = useState<number>()
   const season = useRecoilValue(selectSeasonState)
 
+  const { data, isLoading } = useGetListStudents({
+    page_index: tableQueries.current,
+    page_size: tableQueries.pageSize,
+    search: search || undefined,
+    sort,
+    sort_by: sortBy,
+    group,
+    season,
+  })
+
   useEffect(() => {
     setTableQueries(initPaging)
   }, [search])
 
   useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-      const res = await getListStudents({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search: search || undefined, sort, sort_by: sortBy, group, season })
-      if (!isEmpty(res)) {
-        setTableData(res.data)
-        setPaging({ current: res.pagination.page_index, total: res.pagination.total })
-      }
-      setIsLoading(false)
-    })()
-  }, [tableQueries, search, sort, sortBy, group, season])
+    if (!isEmpty(data)) {
+      setPaging({ current: data.pagination.page_index, total: data.pagination.total })
+    }
+  }, [data])
 
   const columns: ColumnsType<IStudentInResponse> = [
     {
@@ -161,7 +162,7 @@ const StudentV: FC = () => {
         className='text-wrap'
         rowKey='id'
         pagination={false}
-        dataSource={tableData}
+        dataSource={data?.data || []}
         loading={isLoading}
         scroll={{ x: 1200 }}
         bordered

@@ -2,17 +2,10 @@ import { IDocumentInResponse, IListDocumentInResponse, IParamsGetListDocument } 
 import { get } from './HTTPService'
 import { API_LIST } from '@constants/index'
 
-export const getListDocuments = async (params?: IParamsGetListDocument): Promise<IListDocumentInResponse> => {
-  const response = await get({
-    url: API_LIST.document,
-    data: params,
-  })
-  return response?.data
+export const getListDocuments = (params?: IParamsGetListDocument): Promise<IListDocumentInResponse> => {
+  return get(API_LIST.document, { params })
 }
 
 export const getDocumentDetail = async (id: string): Promise<IDocumentInResponse> => {
-  const response = await get({
-    url: API_LIST.document + '/' + id,
-  })
-  return response?.data
+  return get(API_LIST.document + '/' + id)
 }

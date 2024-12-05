@@ -1,64 +1,56 @@
 import { Button, Checkbox, GetProp, Spin } from 'antd'
 
-import { FC, ReactNode, useEffect, useMemo, useReducer, useState } from 'react'
-import { isArray, isEmpty, isEqual, size } from 'lodash'
+import { FC, ReactNode, useEffect, useMemo, useState } from 'react'
+import { isEqual, size } from 'lodash'
 import dayjs from 'dayjs'
-import { ISubjectInResponse } from '@domain/subject'
-import { getListSubjects } from '@src/services/subject'
 import { useRecoilValue } from 'recoil'
 import { currentSeasonState } from '@atom/seasonAtom'
-import { EManageFormStatus, EManageFormType, IManageFormInResponse } from '@domain/manageForm'
-import { getManageForm } from '@src/services/manageForm'
-import { getSubjectRegistration, postSubjectRegistration } from '@src/services/registration'
+import { EManageFormStatus, EManageFormType } from '@domain/manageForm'
+
+import { useGetManageForm } from '@src/apis/manageForm/useQueryManageForm'
+import { useGetListSubjects } from '@src/apis/subject/useQuerySubject'
+import { useGetSubjectRegistration } from '@src/apis/registration/useQueryRegistration'
+import { usePostSubjectRegistration } from '@src/apis/registration/useMutationRegistration'
 import { toast } from 'react-toastify'
 
 const SubjectRegistrationV: FC = () => {
-  const [listSubject, setListSubject] = useState<ISubjectInResponse[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [isLoadingSubmit, setIsLoadingSubmit] = useState(false)
-  const [dataForm, setDataForm] = useState<IManageFormInResponse>()
-  const [isUpdateForm, setIsUpdateForm] = useState(false)
   const currentSeason = useRecoilValue(currentSeasonState)
   const [value, setValue] = useState<string[]>([])
   const [initValue, setInitValue] = useState<string[]>()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [error, setError] = useState<string>()
-  const [reloadData, setReloadData] = useReducer((prev) => !prev, false)
+
+  const { data: dataForm, isFetched, isLoading: isLoadingManageForm } = useGetManageForm(EManageFormType.SUBJECT_REGISTRATION)
+  const { data: listSubjects, isLoading: isLoadingSubject } = useGetListSubjects({ season: currentSeason?.season })
+  const { data: dataSubjectRegistration, isLoading: isLoadingRegistration } = useGetSubjectRegistration(isFetched)
 
   useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-      const resForm = await getManageForm(EManageFormType.SUBJECT_REGISTRATION)
-      const resSubjectRegistration = await getSubjectRegistration()
-      const resSubjects = await getListSubjects({ season: currentSeason?.season || undefined })
-      if (!isEmpty(resForm)) setDataForm(resForm)
-      if (resSubjectRegistration) {
-        setIsUpdateForm(true)
-        setValue(resSubjectRegistration.subjects_registration)
-        setInitValue(resSubjectRegistration.subjects_registration)
-      }
-      if (!isEmpty(resSubjects) || isArray(resSubjects)) setListSubject(resSubjects)
+    if (dataSubjectRegistration) {
+      setValue(dataSubjectRegistration.subjects_registration)
+      setInitValue(dataSubjectRegistration.subjects_registration)
+    }
+  }, [currentSeason])
 
-      setIsLoading(false)
-    })()
-  }, [currentSeason, reloadData])
+  const isUpdateForm = !!dataSubjectRegistration
 
   const onChange: GetProp<typeof Checkbox.Group, 'onChange'> = (checkedValues) => {
     setValue(checkedValues as string[])
   }
+
+  const onSuccess = () => {
+    setInitValue(value)
+    toast.success('Đăng ký thành công')
+  }
+
+  const { mutate, isPending } = usePostSubjectRegistration(onSuccess)
 
   const onSubmit = async () => {
     // if (size(value) < 15) {
     //   setError('Bạn phải đăng ký ít nhất 15 chủ đề.')
     //   return
     // }
-    setIsLoadingSubmit(true)
-    const res = await postSubjectRegistration({ subjects: value })
-    if (!isEmpty(res)) {
-      toast.success('Đăng ký thành công')
-      setReloadData()
-    }
-    setIsLoadingSubmit(false)
+
+    mutate({ subjects: value })
   }
 
   const element: ReactNode = useMemo(() => {
@@ -80,8 +72,9 @@ const SubjectRegistrationV: FC = () => {
               <div className='text-center text-lg font-medium'>Đây là danh sách chủ đề bạn đã đăng ký</div>
               <div className='flex justify-center'>
                 <div className='mt-5'>
-                  {size(listSubject) > 0 &&
-                    listSubject.map((item) => (
+                  {listSubjects &&
+                    size(listSubjects) > 0 &&
+                    listSubjects.map((item) => (
                       <p className='mb-1 break-words' key={item.id}>
                         <span className='italic'>{dayjs(item.start_at).format('DD-MM-YYYY')}</span> - {item.code} - {item.title}
                       </p>
@@ -114,8 +107,9 @@ const SubjectRegistrationV: FC = () => {
               <div className='text-center italic'>Lưu ý: Bạn phải chọn tối thiểu 15 chủ đề</div>
               <div className='mt-5 flex justify-center'>
                 <Checkbox.Group className='flex max-w-5xl flex-col gap-2' value={value} onChange={onChange}>
-                  {size(listSubject) > 0 &&
-                    listSubject.map((item) => (
+                  {listSubjects &&
+                    size(listSubjects) > 0 &&
+                    listSubjects.map((item) => (
                       <Checkbox className='text-base' value={item.id} key={item.id}>
                         <span className='break-words'>
                           {dayjs(item.start_at).format('DD-MM-YYYY')} - {item.code} - {item.title}
@@ -125,7 +119,7 @@ const SubjectRegistrationV: FC = () => {
                   {error && size(value) < 15 ? <p className='text-red-500'>{error}</p> : null}
 
                   <div>
-                    <Button disabled={isEqual(initValue, value)} loading={isLoadingSubmit} className='mt-2' onClick={onSubmit} type='primary'>
+                    <Button disabled={isEqual(initValue, value)} loading={isPending} className='mt-2' onClick={onSubmit} type='primary'>
                       {isUpdateForm ? 'Sửa đăng ký' : 'Đăng ký'}
                     </Button>
                   </div>
@@ -137,11 +131,11 @@ const SubjectRegistrationV: FC = () => {
       default:
         return null
     }
-  }, [dataForm, value, error])
+  }, [dataForm, value, error, initValue, listSubjects])
 
   return (
     <div className='mx-6 mt-6 min-h-[calc(100vh-96px)]'>
-      {isLoading ? (
+      {isLoadingManageForm && isLoadingSubject && isLoadingRegistration ? (
         <div className='mt-20 flex w-full justify-center'>
           <Spin size='large' />
         </div>

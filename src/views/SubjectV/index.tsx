@@ -3,20 +3,18 @@ import { Input, Select } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 import type { TableProps } from 'antd'
 
-import { FC, useEffect, useState } from 'react'
-import { isArray, isEmpty } from 'lodash'
+import { FC, useState } from 'react'
+import { isArray } from 'lodash'
 import dayjs from 'dayjs'
 import { ESubjectStatus, ISubjectInResponse } from '@domain/subject'
-import { getListSubjects } from '@src/services/subject'
 import { ESubjectStatusDetail, OPTIONS_SUBDIVISION, OPTIONS_SUBJECT_STATUS } from '@constants/subject'
 import ModalView from './ModalView'
 import { useRecoilValue } from 'recoil'
 import { selectSeasonState } from '@atom/seasonAtom'
+import { useGetListSubjects } from '@src/apis/subject/useQuerySubject'
 
 const SubjectV: FC = () => {
   const [openForm, setOpenForm] = useState<IOpenFormWithMode<ISubjectInResponse>>({ active: false, mode: 'view' })
-  const [tableData, setTableData] = useState<ISubjectInResponse[]>([])
-  const [isLoading, setIsLoading] = useState(false)
 
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState<ESubjectStatus>()
@@ -25,16 +23,7 @@ const SubjectV: FC = () => {
   const [sortBy, setSortBy] = useState<string>()
   const season = useRecoilValue(selectSeasonState)
 
-  useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-      const data = await getListSubjects({ search, subdivision, status, sort, sort_by: sortBy, season })
-      if (!isEmpty(data) || isArray(data)) {
-        setTableData(data)
-      }
-      setIsLoading(false)
-    })()
-  }, [subdivision, search, status, sort, sortBy, season])
+  const { data, isLoading } = useGetListSubjects({ search, subdivision, status, sort, sort_by: sortBy, season })
 
   const columns: ColumnsType<ISubjectInResponse> = [
     {
@@ -144,7 +133,7 @@ const SubjectV: FC = () => {
         className='text-wrap'
         rowKey='id'
         pagination={false}
-        dataSource={tableData}
+        dataSource={data}
         loading={isLoading}
         scroll={{ x: 1200 }}
         bordered

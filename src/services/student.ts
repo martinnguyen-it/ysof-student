@@ -2,24 +2,14 @@ import { IStudentInResponse, IListStudentInResponse, IParamsGetListStudent, IStu
 import { get } from './HTTPService'
 import { API_LIST } from '@constants/index'
 
-export const getMe = async (): Promise<IStudentMeInResponse> => {
-  const response = await get({
-    url: API_LIST.getMe,
-  })
-  return response?.data
+export const getMe = (): Promise<IStudentMeInResponse> => {
+  return get(API_LIST.getMe)
 }
 
-export const getListStudents = async (params?: IParamsGetListStudent): Promise<IListStudentInResponse> => {
-  const response = await get({
-    url: API_LIST.student,
-    data: params,
-  })
-  return response?.data
+export const getListStudents = (params?: IParamsGetListStudent): Promise<IListStudentInResponse> => {
+  return get(API_LIST.student, { params })
 }
 
-export const getStudentDetail = async (id: string): Promise<IStudentInResponse> => {
-  const response = await get({
-    url: API_LIST.student + '/' + id,
-  })
-  return response?.data
+export const getStudentDetail = (id: string): Promise<IStudentInResponse> => {
+  return get(API_LIST.student + '/' + id)
 }

@@ -2,17 +2,6 @@ import { IRegistrationInResponse, IRegistrationPayload } from '@domain/registrat
 import { get, post } from './HTTPService'
 import { API_LIST } from '@constants/index'
 
-export const getSubjectRegistration = async (): Promise<IRegistrationInResponse | null> => {
-  const response = await get({
-    url: API_LIST.registration,
-  })
-  return response?.data
-}
+export const getSubjectRegistration = (): Promise<IRegistrationInResponse | null> => get(API_LIST.registration)
 
-export const postSubjectRegistration = async (data: IRegistrationPayload): Promise<IRegistrationInResponse | null> => {
-  const response = await post({
-    url: API_LIST.registration,
-    data,
-  })
-  return response?.data
-}
+export const postSubjectRegistration = (data: IRegistrationPayload): Promise<IRegistrationInResponse> => post(API_LIST.registration, data)

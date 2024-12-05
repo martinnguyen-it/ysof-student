@@ -12,27 +12,39 @@ import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { VN_TIMEZONE } from './constants'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault(VN_TIMEZONE)
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 3,
+    },
+  },
+})
+
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
-    <RecoilRoot>
-      <RecoilNexus />
-      <ConfigProvider
-        theme={{
-          token: {
-            fontFamily: 'inherit',
-          },
-        }}
-      >
-        <App />
-        <ToastContainer autoClose={3000} />
-      </ConfigProvider>
-    </RecoilRoot>
+    <QueryClientProvider client={queryClient}>
+      <RecoilRoot>
+        <RecoilNexus />
+        <ConfigProvider
+          theme={{
+            token: {
+              fontFamily: 'inherit',
+            },
+          }}
+        >
+          <App />
+          <ToastContainer autoClose={3000} />
+        </ConfigProvider>
+      </RecoilRoot>
+    </QueryClientProvider>{' '}
   </React.StrictMode>,
 )
 
