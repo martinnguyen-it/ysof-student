@@ -1,7 +1,7 @@
 import { ISubjectEvaluationInResponse } from '@domain/subjectEvaluation'
 import { useQueryErrorToast } from '@src/hooks/useQueryErrorToast'
 import { getListSubjectEvaluationsMe, getSubjectEvaluationBySubjectId } from '@src/services/subjectEvaluation'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, UseQueryOptions } from '@tanstack/react-query'
 
 export const useGetListSubjectEvaluationsMe = () => {
   const query = useQuery<ISubjectEvaluationInResponse[], Error>({
@@ -12,17 +12,15 @@ export const useGetListSubjectEvaluationsMe = () => {
   return query
 }
 
-export interface IQueryGetSubjectEvaluationBySubjectId {
+export interface IQueryGetSubjectEvaluationBySubjectId extends Partial<UseQueryOptions<ISubjectEvaluationInResponse, Error>> {
   subjectId: string
-  isToastError: boolean
-  enabled: boolean
+  isToastError?: boolean
 }
-export const useGetSubjectEvaluationBySubjectId = ({ subjectId, isToastError = true, enabled = true }: IQueryGetSubjectEvaluationBySubjectId) => {
+export const useGetSubjectEvaluationBySubjectId = ({ subjectId, isToastError = true, ...props }: IQueryGetSubjectEvaluationBySubjectId) => {
   const query = useQuery<ISubjectEvaluationInResponse, Error>({
     queryKey: ['getSubjectEvaluationBySubjectId', subjectId],
     queryFn: () => getSubjectEvaluationBySubjectId(subjectId),
-    enabled,
-    retry: 1,
+    ...props,
   })
   useQueryErrorToast(isToastError && query.isError, query?.error?.message!)
   return query

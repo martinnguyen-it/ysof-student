@@ -15,7 +15,7 @@ import { useGetListStudents } from '@src/apis/student/useQueryStudent'
 const StudentV: FC = () => {
   const initPaging = {
     current: 1,
-    pageSize: 20,
+    pageSize: 300,
   }
   const [tableQueries, setTableQueries] = useState(initPaging)
   const [paging, setPaging] = useState({ total: 0, current: 1 })

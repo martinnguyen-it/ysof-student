@@ -1,6 +1,6 @@
 import { Button, Divider, Form, Input, Spin } from 'antd'
 
-import { FC, ReactNode, useEffect, useMemo } from 'react'
+import { FC, ReactNode, useEffect, useMemo, useState } from 'react'
 import { isEmpty } from 'lodash'
 import dayjs from 'dayjs'
 import { EManageFormStatus, EManageFormType } from '@domain/manageForm'
@@ -22,9 +22,14 @@ const SubjectAbsentV: FC = () => {
     id: dataForm?.data?.subject_id,
     enabled: isFetched && dataForm?.status !== EManageFormStatus.CLOSED && !!dataForm?.data?.subject_id,
     isToastError: false,
+    retry: 1,
   })
 
-  const isUpdateForm = !!dataSubjectAbsent
+  const [isUpdateForm, setIsUpdateForm] = useState(!!dataSubjectAbsent)
+
+  useEffect(() => {
+    if (dataSubjectAbsent) setIsUpdateForm(true)
+  }, [dataSubjectAbsent])
 
   useEffect(() => {
     if (!isEmpty(dataSubjectAbsent)) {
@@ -35,6 +40,7 @@ const SubjectAbsentV: FC = () => {
   const onSuccess = () => {
     if (isUpdateForm) toast.success('Sửa thành công')
     else toast.success('Thêm thành công')
+    setIsUpdateForm(true)
   }
 
   const { mutate: mutateCreate, isPending: isPendingCreate } = useCreateSubjectAbsent(onSuccess)
@@ -57,6 +63,7 @@ const SubjectAbsentV: FC = () => {
   const onSuccessDelete = () => {
     toast.success('Xóa thành công')
     form.resetFields()
+    setIsUpdateForm(false)
   }
   const { mutate: mutateDelete, isPending: isPendingDelete } = useDeleteSubjectAbsent(onSuccessDelete)
   const onDeleteAbsent = () => {

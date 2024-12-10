@@ -26,6 +26,7 @@ const SubjectEvaluationV: FC = () => {
     subjectId: dataForm?.data?.subject_id,
     enabled: isFetched && dataForm?.status !== EManageFormStatus.CLOSED && !!dataForm?.data?.subject_id,
     isToastError: false,
+    retry: 1,
   })
   const { data: dataSubjectEvaluationQuestions, isLoading: isLoadingEvaluationQuestions } = useGetSubjectEvaluationQuestions({
     subjectId: dataForm?.data?.subject_id,
