@@ -1,7 +1,12 @@
-import { IListStudentInResponse, IParamsGetListStudent, IStudentInResponse, IStudentMeInResponse } from '@domain/student'
-import { useQueryErrorToast } from '@src/hooks/useQueryErrorToast'
-import { getListStudents, getMe, getStudentDetail } from '@src/services/student'
 import { useQuery } from '@tanstack/react-query'
+import {
+  IListStudentInResponse,
+  IParamsGetListStudent,
+  IStudentInResponse,
+  IStudentMeInResponse,
+} from '@/domain/student'
+import { getListStudents, getMe, getStudentDetail } from '@/services/student'
+import { useQueryErrorToast } from '@/hooks/useQueryErrorToast'
 
 export const useGetListStudents = (params?: IParamsGetListStudent) => {
   const query = useQuery<IListStudentInResponse, Error>({

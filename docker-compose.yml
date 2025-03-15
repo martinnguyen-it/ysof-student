@@ -1,4 +1,3 @@
-version: "2.1"
 services:
     webapp:
         image: ysof_student
@@ -8,6 +7,6 @@ services:
         restart: unless-stopped
         networks:
             - ysof_student
-networks:
-    ysof_student:
-        driver: bridge
+        container_name: ysof_student_${NODE_ENV}
+        ports:
+            - "3000:80"

@@ -1,7 +1,10 @@
-import { EEvaluationQuestionType, IEvaluationQuestionItem } from '@domain/subjectEvaluationQuestion'
+import { FC, ReactNode, useMemo } from 'react'
+import {
+  EEvaluationQuestionType,
+  IEvaluationQuestionItem,
+} from '@/domain/subjectEvaluationQuestion'
 import { Checkbox, Form, Input, Radio } from 'antd'
 import { isArray } from 'lodash'
-import { FC, ReactNode, useMemo } from 'react'
 
 interface IProps extends IEvaluationQuestionItem {
   index: number
@@ -42,7 +45,11 @@ const InputByType: FC<IProps> = ({ type, title, index, answers }) => {
   }, [type])
 
   return (
-    <Form.Item name={['answers', index]} label={`${index + 7}. ${title}`} rules={[{ required: true, message: 'Trường này là bắt buộc' }]}>
+    <Form.Item
+      name={['answers', index]}
+      label={`${index + 7}. ${title}`}
+      rules={[{ required: true, message: 'Trường này là bắt buộc' }]}
+    >
       {input}
     </Form.Item>
   )

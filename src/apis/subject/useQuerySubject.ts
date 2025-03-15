@@ -1,7 +1,7 @@
-import { IParamsGetListSubject, ISubjectInResponse } from '@domain/subject'
-import { useQueryErrorToast } from '@src/hooks/useQueryErrorToast'
-import { getListSubjects, getSubjectDetail } from '@src/services/subject'
 import { useQuery } from '@tanstack/react-query'
+import { IParamsGetListSubject, ISubjectInResponse } from '@/domain/subject'
+import { getListSubjects, getSubjectDetail } from '@/services/subject'
+import { useQueryErrorToast } from '@/hooks/useQueryErrorToast'
 
 export const useGetListSubjects = (params?: IParamsGetListSubject) => {
   const query = useQuery<ISubjectInResponse[], Error>({

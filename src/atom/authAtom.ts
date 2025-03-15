@@ -1,4 +1,4 @@
-import { IStudentMeInResponse } from '@domain/student'
+import { IStudentMeInResponse } from '@/domain/student'
 import { atom } from 'recoil'
 import { recoilPersist } from 'recoil-persist'
 

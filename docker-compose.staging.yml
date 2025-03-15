@@ -1,6 +1,0 @@
-version: "2.1"
-services:
-    webapp:
-        container_name: ysof_student_staging
-        ports:
-            - "3001:80"

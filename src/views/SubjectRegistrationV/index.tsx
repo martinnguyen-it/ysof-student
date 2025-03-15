@@ -1,17 +1,15 @@
-import { Button, Checkbox, GetProp, Spin } from 'antd'
-
 import { FC, ReactNode, useEffect, useMemo, useState } from 'react'
-import { isEqual, size } from 'lodash'
+import { useGetManageForm } from '@/apis/manageForm/useQueryManageForm'
+import { usePostSubjectRegistration } from '@/apis/registration/useMutationRegistration'
+import { useGetSubjectRegistration } from '@/apis/registration/useQueryRegistration'
+import { useGetListSubjects } from '@/apis/subject/useQuerySubject'
+import { currentSeasonState } from '@/atom/seasonAtom'
+import { EManageFormStatus, EManageFormType } from '@/domain/manageForm'
+import { Button, Checkbox, GetProp, Spin } from 'antd'
 import dayjs from 'dayjs'
-import { useRecoilValue } from 'recoil'
-import { currentSeasonState } from '@atom/seasonAtom'
-import { EManageFormStatus, EManageFormType } from '@domain/manageForm'
-
-import { useGetManageForm } from '@src/apis/manageForm/useQueryManageForm'
-import { useGetListSubjects } from '@src/apis/subject/useQuerySubject'
-import { useGetSubjectRegistration } from '@src/apis/registration/useQueryRegistration'
-import { usePostSubjectRegistration } from '@src/apis/registration/useMutationRegistration'
+import { isEqual, size } from 'lodash'
 import { toast } from 'react-toastify'
+import { useRecoilValue } from 'recoil'
 
 const SubjectRegistrationV: FC = () => {
   const currentSeason = useRecoilValue(currentSeasonState)
@@ -20,9 +18,15 @@ const SubjectRegistrationV: FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [error, setError] = useState<string>()
 
-  const { data: dataForm, isFetched, isLoading: isLoadingManageForm } = useGetManageForm(EManageFormType.SUBJECT_REGISTRATION)
-  const { data: listSubjects, isLoading: isLoadingSubject } = useGetListSubjects({ season: currentSeason?.season })
-  const { data: dataSubjectRegistration, isLoading: isLoadingRegistration } = useGetSubjectRegistration(isFetched)
+  const {
+    data: dataForm,
+    isFetched,
+    isLoading: isLoadingManageForm,
+  } = useGetManageForm(EManageFormType.SUBJECT_REGISTRATION)
+  const { data: listSubjects, isLoading: isLoadingSubject } =
+    useGetListSubjects({ season: currentSeason?.season })
+  const { data: dataSubjectRegistration, isLoading: isLoadingRegistration } =
+    useGetSubjectRegistration(isFetched)
 
   useEffect(() => {
     if (dataSubjectRegistration) {
@@ -33,7 +37,9 @@ const SubjectRegistrationV: FC = () => {
 
   const isUpdateForm = !!dataSubjectRegistration
 
-  const onChange: GetProp<typeof Checkbox.Group, 'onChange'> = (checkedValues) => {
+  const onChange: GetProp<typeof Checkbox.Group, 'onChange'> = (
+    checkedValues
+  ) => {
     setValue(checkedValues as string[])
   }
 
@@ -59,24 +65,33 @@ const SubjectRegistrationV: FC = () => {
       case EManageFormStatus.INACTIVE:
         return (
           <div className='mt-4 rounded-xl bg-white p-6 shadow-lg'>
-            <div className='text-center text-xl font-medium'>Form chưa được mở</div>
+            <div className='text-center text-xl font-medium'>
+              Form chưa được mở
+            </div>
           </div>
         )
       case EManageFormStatus.CLOSED:
         return (
           <>
             <div className='mt-4 rounded-xl bg-white p-6 shadow-lg'>
-              <div className='text-center text-xl font-medium'>Form đã được đóng</div>
+              <div className='text-center text-xl font-medium'>
+                Form đã được đóng
+              </div>
             </div>
             <div className='mt-4 rounded-xl bg-white p-6 shadow-lg'>
-              <div className='text-center text-lg font-medium'>Đây là danh sách chủ đề bạn đã đăng ký</div>
+              <div className='text-center text-lg font-medium'>
+                Đây là danh sách chủ đề bạn đã đăng ký
+              </div>
               <div className='flex justify-center'>
                 <div className='mt-5'>
                   {listSubjects &&
                     size(listSubjects) > 0 &&
                     listSubjects.map((item) => (
                       <p className='mb-1 break-words' key={item.id}>
-                        <span className='italic'>{dayjs(item.start_at).format('DD-MM-YYYY')}</span> - {item.code} - {item.title}
+                        <span className='italic'>
+                          {dayjs(item.start_at).format('DD-MM-YYYY')}
+                        </span>{' '}
+                        - {item.code} - {item.title}
                       </p>
                     ))}
                 </div>
@@ -88,10 +103,15 @@ const SubjectRegistrationV: FC = () => {
         return (
           <>
             <div className='rounded-xl bg-white p-6 shadow-lg'>
-              <div className='flex justify-center text-2xl font-bold'>ĐĂNG KÝ MÔN HỌC - YSOF {currentSeason?.academic_year}</div>
+              <div className='flex justify-center text-2xl font-bold'>
+                ĐĂNG KÝ MÔN HỌC - YSOF {currentSeason?.academic_year}
+              </div>
               <div className='mt-4 px-10'>
-                <p dangerouslySetInnerHTML={{ __html: dataForm?.data?.content }} />
-                Nếu gặp trở ngại với đường link đăng ký môn học, bạn hãy phản hồi với chúng tôi qua địa chỉ email YSOF:{' '}
+                <p
+                  dangerouslySetInnerHTML={{ __html: dataForm?.data?.content }}
+                />
+                Nếu gặp trở ngại với đường link đăng ký môn học, bạn hãy phản
+                hồi với chúng tôi qua địa chỉ email YSOF:{' '}
                 <a className='text-blue-500' href='mailto:ysofsj@gmail.com'>
                   ysofsj@gmail.com
                 </a>
@@ -103,23 +123,44 @@ const SubjectRegistrationV: FC = () => {
               </div>
             </div>
             <div className='mt-4 rounded-xl bg-white p-6 shadow-lg'>
-              <div className='text-center text-lg font-medium'>Vui lòng chọn môn học bạn muốn đăng ký</div>
-              <div className='text-center italic'>Lưu ý: Bạn phải chọn tối thiểu 15 chủ đề</div>
+              <div className='text-center text-lg font-medium'>
+                Vui lòng chọn môn học bạn muốn đăng ký
+              </div>
+              <div className='text-center italic'>
+                Lưu ý: Bạn phải chọn tối thiểu 15 chủ đề
+              </div>
               <div className='mt-5 flex justify-center'>
-                <Checkbox.Group className='flex max-w-5xl flex-col gap-2' value={value} onChange={onChange}>
+                <Checkbox.Group
+                  className='flex max-w-5xl flex-col gap-2'
+                  value={value}
+                  onChange={onChange}
+                >
                   {listSubjects &&
                     size(listSubjects) > 0 &&
                     listSubjects.map((item) => (
-                      <Checkbox className='text-base' value={item.id} key={item.id}>
+                      <Checkbox
+                        className='text-base'
+                        value={item.id}
+                        key={item.id}
+                      >
                         <span className='break-words'>
-                          {dayjs(item.start_at).format('DD-MM-YYYY')} - {item.code} - {item.title}
+                          {dayjs(item.start_at).format('DD-MM-YYYY')} -{' '}
+                          {item.code} - {item.title}
                         </span>
                       </Checkbox>
                     ))}
-                  {error && size(value) < 15 ? <p className='text-red-500'>{error}</p> : null}
+                  {error && size(value) < 15 ? (
+                    <p className='text-red-500'>{error}</p>
+                  ) : null}
 
                   <div>
-                    <Button disabled={isEqual(initValue, value)} loading={isPending} className='mt-2' onClick={onSubmit} type='primary'>
+                    <Button
+                      disabled={isEqual(initValue, value)}
+                      loading={isPending}
+                      className='mt-2'
+                      onClick={onSubmit}
+                      type='primary'
+                    >
                       {isUpdateForm ? 'Sửa đăng ký' : 'Đăng ký'}
                     </Button>
                   </div>
@@ -133,16 +174,12 @@ const SubjectRegistrationV: FC = () => {
     }
   }, [dataForm, value, error, initValue, listSubjects])
 
-  return (
-    <div className='mx-6 mt-6 min-h-[calc(100vh-96px)]'>
-      {isLoadingManageForm && isLoadingSubject && isLoadingRegistration ? (
-        <div className='mt-20 flex w-full justify-center'>
-          <Spin size='large' />
-        </div>
-      ) : (
-        element
-      )}
+  return isLoadingManageForm && isLoadingSubject && isLoadingRegistration ? (
+    <div className='mt-20 flex w-full justify-center'>
+      <Spin size='large' />
     </div>
+  ) : (
+    element
   )
 }
 

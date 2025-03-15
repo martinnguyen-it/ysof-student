@@ -1,7 +1,7 @@
-import { IRegistrationInResponse } from '@domain/registration'
-import { useQueryErrorToast } from '@src/hooks/useQueryErrorToast'
-import { getSubjectRegistration } from '@src/services/registration'
 import { useQuery } from '@tanstack/react-query'
+import { IRegistrationInResponse } from '@/domain/registration'
+import { getSubjectRegistration } from '@/services/registration'
+import { useQueryErrorToast } from '@/hooks/useQueryErrorToast'
 
 export const useGetSubjectRegistration = (enabled = true) => {
   const query = useQuery<IRegistrationInResponse | null, Error>({

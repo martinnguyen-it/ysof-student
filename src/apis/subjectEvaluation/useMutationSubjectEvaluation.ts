@@ -1,11 +1,22 @@
-import { ICreateSubjectEvaluation, ISubjectEvaluationInResponse } from '@domain/subjectEvaluation'
-import { createSubjectEvaluation, updateSubjectEvaluation } from '@src/services/subjectEvaluation'
 import { useMutation } from '@tanstack/react-query'
+import {
+  ICreateSubjectEvaluation,
+  ISubjectEvaluationInResponse,
+} from '@/domain/subjectEvaluation'
+import {
+  createSubjectEvaluation,
+  updateSubjectEvaluation,
+} from '@/services/subjectEvaluation'
 import { toast } from 'react-toastify'
 
-export const useCreateSubjectEvaluation = (onSuccess: (data: ISubjectEvaluationInResponse) => void) =>
+export const useCreateSubjectEvaluation = (
+  onSuccess: (data: ISubjectEvaluationInResponse) => void
+) =>
   useMutation({
-    mutationFn: (payload: { subjectId: string; data: ICreateSubjectEvaluation }) => createSubjectEvaluation(payload.subjectId, payload.data),
+    mutationFn: (payload: {
+      subjectId: string
+      data: ICreateSubjectEvaluation
+    }) => createSubjectEvaluation(payload.subjectId, payload.data),
     onSuccess,
     onError: (error: Error) => {
       const { message } = error
@@ -13,9 +24,14 @@ export const useCreateSubjectEvaluation = (onSuccess: (data: ISubjectEvaluationI
     },
   })
 
-export const useUpdateSubjectEvaluation = (onSuccess: (data: ISubjectEvaluationInResponse) => void) =>
+export const useUpdateSubjectEvaluation = (
+  onSuccess: (data: ISubjectEvaluationInResponse) => void
+) =>
   useMutation({
-    mutationFn: (payload: { subjectId: string; data: ICreateSubjectEvaluation }) => updateSubjectEvaluation(payload.subjectId, payload.data),
+    mutationFn: (payload: {
+      subjectId: string
+      data: ICreateSubjectEvaluation
+    }) => updateSubjectEvaluation(payload.subjectId, payload.data),
     onSuccess,
     onError: (error: Error) => {
       const { message } = error

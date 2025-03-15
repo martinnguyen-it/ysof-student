@@ -1,4 +1,4 @@
-import { IPaginationAPI, IPaginationAPIParams, ISort } from '@domain/common'
+import { IPaginationAPI, IPaginationAPIParams, ISort } from '@/domain/common'
 
 export interface IStudentInResponse {
   numerical_order: number
@@ -14,7 +14,8 @@ export interface IStudentInResponse {
   season_info: IStudentSeasonInfo
 }
 
-export interface IStudentMeInResponse extends Omit<IStudentInResponse, 'season_info'> {
+export interface IStudentMeInResponse
+  extends Omit<IStudentInResponse, 'season_info'> {
   seasons_info: IStudentSeasonInfo[]
 }
 

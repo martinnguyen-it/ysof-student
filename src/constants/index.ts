@@ -1,12 +1,8 @@
-import { DashboardOutlined, UserOutlined } from '@ant-design/icons'
-import { AbsentIcon, SubjectEvaluationIcon, LessonIcon, RegisterIcon } from '@components/assets/svg'
-import { IRouter } from '@domain/app'
-
 export const API_CONFIG = {
   isLoggingEnable: false,
   timeout: 600000,
   unauthorizedErrorCode: 401,
-  HOST: process.env.REACT_APP_BASE_URL || 'http://localhost:8000',
+  HOST: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
 }
 
 export const VN_TIMEZONE = 'Asia/Ho_Chi_Minh'
@@ -42,49 +38,3 @@ export const API_LIST = {
   registration: '/api/v1/student/subjects/registration',
   manageForm: '/api/v1/manage-form',
 }
-
-export const ROUTES_SIDEBAR: IRouter[] = [
-  {
-    name: 'Bảng tin',
-    path: '/',
-    icon: DashboardOutlined,
-  },
-  // {
-  //   name: 'Tài liệu',
-  //   path: '/tai-lieu',
-  //   icon: FileTextOutlined,
-  // },
-  {
-    name: 'Danh sách học viên',
-    icon: UserOutlined,
-    path: '/danh-sach-hoc-vien',
-  },
-  {
-    name: 'Danh sách chủ đề',
-    icon: LessonIcon,
-    path: '/danh-sach-chu-de',
-  },
-  {
-    name: 'Lượng giá',
-    icon: SubjectEvaluationIcon,
-    path: '/luong-gia',
-    requiredCurrent: true,
-  },
-  {
-    name: 'Xin nghỉ phép',
-    icon: AbsentIcon,
-    path: '/xin-nghi-phep',
-    requiredCurrent: true,
-  },
-  // {
-  //   name: 'Giảng viên',
-  //   path: '/giang-vien',
-  //   icon: SolutionOutlined,
-  // },
-  {
-    name: 'Đăng ký môn học',
-    icon: RegisterIcon,
-    path: '/dang-ky-hoc',
-    requiredCurrent: true,
-  },
-]

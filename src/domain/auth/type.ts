@@ -1,4 +1,4 @@
-import { IStudentMeInResponse } from '@domain/student'
+import { IStudentMeInResponse } from '@/domain/student'
 
 export interface ILoginRequest {
   email: string

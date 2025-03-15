@@ -7,7 +7,8 @@ export interface ICreateSubjectEvaluation {
   answers?: any[]
   feedback_admin?: string
 }
-export interface IUpdateSubjectEvaluation extends Partial<ICreateSubjectEvaluation> {}
+export interface IUpdateSubjectEvaluation
+  extends Partial<ICreateSubjectEvaluation> {}
 
 export interface IQualityEvaluation {
   focused_right_topic: EQualityValue

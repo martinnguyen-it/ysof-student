@@ -1,16 +1,19 @@
-import { ESort } from '@domain/common'
-import { Avatar, Input, Pagination, Select, Tooltip } from 'antd'
-import Table, { ColumnsType } from 'antd/es/table'
-import type { TableProps } from 'antd'
-
 import { FC, useEffect, useState } from 'react'
-import { isArray } from 'lodash'
-import { EDocumentType, IDocumentInResponse } from '@domain/document'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
+import { useGetListDocuments } from '@/apis/documents/useQueryDocument'
+import { ESort } from '@/domain/common'
+import { EDocumentType, IDocumentInResponse } from '@/domain/document'
+import { Avatar, Input, Pagination, Select, Tooltip } from 'antd'
+import type { TableProps } from 'antd'
+import Table, { ColumnsType } from 'antd/es/table'
 import dayjs from 'dayjs'
-import { PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@constants/index'
-import { EDocumentTypeDetail, OPTIONS_DOCUMENT_LABEL, OPTIONS_DOCUMENT_TYPE } from '@constants/document'
-import { useGetListDocuments } from '@src/apis/documents/useQueryDocument'
+import { isArray } from 'lodash'
+import {
+  EDocumentTypeDetail,
+  OPTIONS_DOCUMENT_LABEL,
+  OPTIONS_DOCUMENT_TYPE,
+} from '@/constants/document'
+import { PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@/constants/index'
 
 const DocumentV: FC = () => {
   const initPaging = {
@@ -29,11 +32,22 @@ const DocumentV: FC = () => {
     setTableQueries(initPaging)
   }, [search])
 
-  const { data, isLoading } = useGetListDocuments({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search, type, label, sort, sort_by: sortBy })
+  const { data, isLoading } = useGetListDocuments({
+    page_index: tableQueries.current,
+    page_size: tableQueries.pageSize,
+    search,
+    type,
+    label,
+    sort,
+    sort_by: sortBy,
+  })
 
   useEffect(() => {
     if (data) {
-      setPaging({ current: data.pagination.page_index, total: data.pagination.total })
+      setPaging({
+        current: data.pagination.page_index,
+        total: data.pagination.total,
+      })
     }
   }, [data])
 
@@ -43,7 +57,8 @@ const DocumentV: FC = () => {
       dataIndex: 'index',
       key: 'index',
       width: '60px',
-      render: (_text, _record, index) => index + 1 + (paging.current - 1) * tableQueries.pageSize,
+      render: (_text, _record, index) =>
+        index + 1 + (paging.current - 1) * tableQueries.pageSize,
     },
     {
       title: 'Tên',
@@ -54,9 +69,16 @@ const DocumentV: FC = () => {
       render: (text, record: IDocumentInResponse) => {
         return (
           <Avatar.Group className='flex items-center'>
-            <img className='mr-4 size-7 object-cover' src={`https://drive-thirdparty.googleusercontent.com/64/type/${record?.mimeType}`}></img>
+            <img
+              className='mr-4 size-7 object-cover'
+              src={`https://drive-thirdparty.googleusercontent.com/64/type/${record?.mimeType}`}
+            ></img>
             <Tooltip placement='bottom' title='Nhấn vào đây để xem file'>
-              <Link to={record.webViewLink} target='_blank' className='text-wrap font-medium text-blue-500'>
+              <Link
+                to={record.webViewLink}
+                target='_blank'
+                className='text-wrap font-medium text-blue-500'
+              >
                 {text}
               </Link>
             </Tooltip>
@@ -81,21 +103,27 @@ const DocumentV: FC = () => {
       title: 'Mô tả',
       dataIndex: 'description',
       key: 'description',
-      render: (text: string) => <span className='text-wrap italic'>{text}</span>,
+      render: (text: string) => (
+        <span className='text-wrap italic'>{text}</span>
+      ),
     },
     {
       title: 'Ngày tạo',
       dataIndex: 'created_at',
       key: 'created_at',
       sorter: true,
-      render: (text) => <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>,
+      render: (text) => (
+        <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>
+      ),
     },
     {
       title: 'Ngày sửa',
       dataIndex: 'updated_at',
       key: 'updated_at',
       sorter: true,
-      render: (text) => <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>,
+      render: (text) => (
+        <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>
+      ),
     },
   ]
 
@@ -113,7 +141,11 @@ const DocumentV: FC = () => {
     setLabel(val)
   }
 
-  const handleTableChange: TableProps<IDocumentInResponse>['onChange'] = (_pagination, _filters, sorter) => {
+  const handleTableChange: TableProps<IDocumentInResponse>['onChange'] = (
+    _pagination,
+    _filters,
+    sorter
+  ) => {
     if (!isArray(sorter) && sorter?.order) {
       setSort(sorter.order as ESort)
       setSortBy(sorter.field as string)
@@ -124,10 +156,25 @@ const DocumentV: FC = () => {
   }
 
   return (
-    <div className='min-h-[calc(100vh-48px)] bg-[#d8ecef42] p-6 shadow-lg'>
+    <>
       <div className='mb-4 flex flex-wrap gap-3'>
-        <Input.Search className='w-60' placeholder='Tìm kiếm' size='large' onSearch={onSearch} allowClear />
-        <Select className='w-60' size='large' placeholder='Lọc theo loại' onChange={onChangType} value={type} options={OPTIONS_DOCUMENT_TYPE} allowClear maxTagCount='responsive' />
+        <Input.Search
+          className='w-60'
+          placeholder='Tìm kiếm'
+          size='large'
+          onSearch={onSearch}
+          allowClear
+        />
+        <Select
+          className='w-60'
+          size='large'
+          placeholder='Lọc theo loại'
+          onChange={onChangType}
+          value={type}
+          options={OPTIONS_DOCUMENT_TYPE}
+          allowClear
+          maxTagCount='responsive'
+        />
         <Select
           className='w-60'
           mode='multiple'
@@ -169,7 +216,7 @@ const DocumentV: FC = () => {
         showQuickJumper
         showSizeChanger
       />
-    </div>
+    </>
   )
 }
 

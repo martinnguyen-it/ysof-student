@@ -1,8 +1,13 @@
-import { EQualityValue, IQualityEvaluation } from '@domain/subjectEvaluation'
+import { EQualityValue, IQualityEvaluation } from '@/domain/subjectEvaluation'
 
-export const OPTIONS_QUALITY_VALUE = Object.values(EQualityValue).map((value) => ({ value, label: value }))
+export const OPTIONS_QUALITY_VALUE = Object.values(EQualityValue).map(
+  (value) => ({ value, label: value })
+)
 
-export const EVALUATION_QUALITY: { key: keyof IQualityEvaluation; label: string }[] = [
+export const EVALUATION_QUALITY: {
+  key: keyof IQualityEvaluation
+  label: string
+}[] = [
   {
     key: 'focused_right_topic',
     label: 'Nội dung bài giảng và các thông tin tập trung vào đúng chủ đề',
@@ -13,7 +18,8 @@ export const EVALUATION_QUALITY: { key: keyof IQualityEvaluation; label: string 
   },
   {
     key: 'benefit_in_life',
-    label: 'Bài giảng giúp bạn có thêm định hướng và những giải pháp của cá nhân trong cuộc sống',
+    label:
+      'Bài giảng giúp bạn có thêm định hướng và những giải pháp của cá nhân trong cuộc sống',
   },
   {
     key: 'duration',

@@ -8,7 +8,8 @@ export interface IEvaluationQuestionPayload {
   questions: IEvaluationQuestionItem[]
 }
 
-export interface IEvaluationQuestionResponse extends IEvaluationQuestionPayload {
+export interface IEvaluationQuestionResponse
+  extends IEvaluationQuestionPayload {
   questions: IEvaluationQuestionItem[]
   id: string
   created_at: Date

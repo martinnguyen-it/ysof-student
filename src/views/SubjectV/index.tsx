@@ -1,20 +1,25 @@
-import { ESort, IOpenFormWithMode } from '@domain/common'
-import { Input, Select } from 'antd'
-import Table, { ColumnsType } from 'antd/es/table'
-import type { TableProps } from 'antd'
-
 import { FC, useState } from 'react'
-import { isArray } from 'lodash'
+import { useGetListSubjects } from '@/apis/subject/useQuerySubject'
+import { selectSeasonState } from '@/atom/seasonAtom'
+import { ESort, IOpenFormWithMode } from '@/domain/common'
+import { ESubjectStatus, ISubjectInResponse } from '@/domain/subject'
+import { Input, Select } from 'antd'
+import type { TableProps } from 'antd'
+import Table, { ColumnsType } from 'antd/es/table'
 import dayjs from 'dayjs'
-import { ESubjectStatus, ISubjectInResponse } from '@domain/subject'
-import { ESubjectStatusDetail, OPTIONS_SUBDIVISION, OPTIONS_SUBJECT_STATUS } from '@constants/subject'
-import ModalView from './ModalView'
+import { isArray } from 'lodash'
 import { useRecoilValue } from 'recoil'
-import { selectSeasonState } from '@atom/seasonAtom'
-import { useGetListSubjects } from '@src/apis/subject/useQuerySubject'
+import {
+  ESubjectStatusDetail,
+  OPTIONS_SUBDIVISION,
+  OPTIONS_SUBJECT_STATUS,
+} from '@/constants/subject'
+import ModalView from './ModalView'
 
 const SubjectV: FC = () => {
-  const [openForm, setOpenForm] = useState<IOpenFormWithMode<ISubjectInResponse>>({ active: false, mode: 'view' })
+  const [openForm, setOpenForm] = useState<
+    IOpenFormWithMode<ISubjectInResponse>
+  >({ active: false, mode: 'view' })
 
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState<ESubjectStatus>()
@@ -23,7 +28,14 @@ const SubjectV: FC = () => {
   const [sortBy, setSortBy] = useState<string>()
   const season = useRecoilValue(selectSeasonState)
 
-  const { data, isLoading } = useGetListSubjects({ search, subdivision, status, sort, sort_by: sortBy, season })
+  const { data, isLoading } = useGetListSubjects({
+    search,
+    subdivision,
+    status,
+    sort,
+    sort_by: sortBy,
+    season,
+  })
 
   const columns: ColumnsType<ISubjectInResponse> = [
     {
@@ -90,7 +102,11 @@ const SubjectV: FC = () => {
     setStatus(val)
   }
 
-  const handleTableChange: TableProps<ISubjectInResponse>['onChange'] = (_pagination, _filters, sorter) => {
+  const handleTableChange: TableProps<ISubjectInResponse>['onChange'] = (
+    _pagination,
+    _filters,
+    sorter
+  ) => {
     if (!isArray(sorter) && sorter?.order) {
       setSort(sorter.order as ESort)
       setSortBy(sorter.field as string)
@@ -101,9 +117,15 @@ const SubjectV: FC = () => {
   }
 
   return (
-    <div className='min-h-[calc(100vh-48px)] bg-[#d8ecef42] p-6 shadow-lg'>
+    <>
       <div className='mb-4 flex flex-wrap gap-3'>
-        <Input.Search className='w-60' placeholder='Tìm kiếm' size='large' onSearch={onSearch} allowClear />
+        <Input.Search
+          className='w-60'
+          placeholder='Tìm kiếm'
+          size='large'
+          onSearch={onSearch}
+          allowClear
+        />
         <Select
           className='w-60'
           size='large'
@@ -145,8 +167,10 @@ const SubjectV: FC = () => {
           }
         }}
       />
-      {openForm.active && openForm.mode === 'view' && <ModalView open={openForm} setOpen={setOpenForm} />}
-    </div>
+      {openForm.active && openForm.mode === 'view' && (
+        <ModalView open={openForm} setOpen={setOpenForm} />
+      )}
+    </>
   )
 }
 

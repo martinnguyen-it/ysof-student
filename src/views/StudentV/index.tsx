@@ -1,15 +1,15 @@
-import { ESort } from '@domain/common'
-import { Input, Pagination, Select } from 'antd'
-import Table, { ColumnsType } from 'antd/es/table'
-import type { TableProps } from 'antd'
-
 import { FC, useEffect, useState } from 'react'
+import { useGetListStudents } from '@/apis/student/useQueryStudent'
+import { selectSeasonState } from '@/atom/seasonAtom'
+import { ESort } from '@/domain/common'
+import { IStudentInResponse } from '@/domain/student'
+import { Input, Pagination, Select } from 'antd'
+import type { TableProps } from 'antd'
+import Table, { ColumnsType } from 'antd/es/table'
 import { isArray, isEmpty } from 'lodash'
-import { PAGE_SIZE_OPTIONS_DEFAULT } from '@constants/index'
-import { IStudentInResponse } from '@domain/student'
 import { useRecoilValue } from 'recoil'
-import { selectSeasonState } from '@atom/seasonAtom'
-import { useGetListStudents } from '@src/apis/student/useQueryStudent'
+import { PAGE_SIZE_OPTIONS_DEFAULT } from '@/constants/index'
+
 // import ModalView from './ModalView'
 
 const StudentV: FC = () => {
@@ -41,7 +41,10 @@ const StudentV: FC = () => {
 
   useEffect(() => {
     if (!isEmpty(data)) {
-      setPaging({ current: data.pagination.page_index, total: data.pagination.total })
+      setPaging({
+        current: data.pagination.page_index,
+        total: data.pagination.total,
+      })
     }
   }, [data])
 
@@ -109,7 +112,11 @@ const StudentV: FC = () => {
     setGroup(val ? Number(val) : undefined)
   }
 
-  const handleTableChange: TableProps<IStudentInResponse>['onChange'] = (_pagination, _filters, sorter) => {
+  const handleTableChange: TableProps<IStudentInResponse>['onChange'] = (
+    _pagination,
+    _filters,
+    sorter
+  ) => {
     if (!isArray(sorter) && sorter?.order) {
       setSort(sorter.order as ESort)
       setSortBy(sorter.field as string)
@@ -120,9 +127,15 @@ const StudentV: FC = () => {
   }
 
   return (
-    <div className='min-h-[calc(100vh-48px)] bg-[#d8ecef42] p-6 shadow-lg'>
+    <>
       <div className='mb-4 flex flex-wrap gap-3'>
-        <Input.Search className='w-60' placeholder='Tìm kiếm' size='large' onSearch={onSearch} allowClear />
+        <Input.Search
+          className='w-60'
+          placeholder='Tìm kiếm'
+          size='large'
+          onSearch={onSearch}
+          allowClear
+        />
         <Select
           options={Array.from({ length: 15 }, (_, index) => ({
             value: String(index + 1),
@@ -167,7 +180,7 @@ const StudentV: FC = () => {
         scroll={{ x: 1200 }}
         bordered
       />
-    </div>
+    </>
   )
 }
 

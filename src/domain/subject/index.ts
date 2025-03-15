@@ -1,6 +1,6 @@
-import { ISort } from '@domain/common'
-import { IDocumentInResponse } from '@domain/document'
-import { ILecturerInResponse } from '@domain/lecturer'
+import { ISort } from '@/domain/common'
+import { IDocumentInResponse } from '@/domain/document'
+import { ILecturerInResponse } from '@/domain/lecturer'
 
 export interface ISubjectInResponse {
   title: string
@@ -16,20 +16,6 @@ export interface ISubjectInResponse {
   status: ESubjectStatus
   attachments: IDocumentInResponse[]
 }
-
-export interface ICreateSubject {
-  title: string
-  start_at: string
-  subdivision: string
-  code: string
-  question_url?: string
-  zoom?: IZoomInfo
-  documents_url?: string[]
-  lecturer: string
-  abstract?: string
-}
-
-export interface IUpdateSubject extends Partial<ICreateSubject> {}
 
 export interface IParamsGetListSubject extends ISort {
   search?: string

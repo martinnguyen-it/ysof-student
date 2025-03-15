@@ -1,4 +1,4 @@
-import { ISubjectInEvaluation } from '@domain/subjectEvaluation'
+import { ISubjectInEvaluation } from '@/domain/subjectEvaluation'
 
 export interface ICreateSubjectAbsent {
   reason: string

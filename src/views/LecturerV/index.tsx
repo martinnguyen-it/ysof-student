@@ -1,18 +1,19 @@
-import { ESort, IOpenFormWithMode } from '@domain/common'
-import { Input, Pagination } from 'antd'
-import Table, { ColumnsType } from 'antd/es/table'
-import type { TableProps } from 'antd'
-
 import { FC, useEffect, useState } from 'react'
-import { isArray, isEmpty } from 'lodash'
+import { ESort, IOpenFormWithMode } from '@/domain/common'
+import { ILecturerInResponse } from '@/domain/lecturer'
+import { getListLecturers } from '@/services/lecturer'
+import { Input, Pagination } from 'antd'
+import type { TableProps } from 'antd'
+import Table, { ColumnsType } from 'antd/es/table'
 import dayjs from 'dayjs'
-import { PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@constants/index'
-import { ILecturerInResponse } from '@domain/lecturer'
-import { getListLecturers } from '@src/services/lecturer'
+import { isArray, isEmpty } from 'lodash'
+import { PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@/constants/index'
 import ModalView from './ModalView'
 
 const LecturerV: FC = () => {
-  const [openForm, setOpenForm] = useState<IOpenFormWithMode<ILecturerInResponse>>({ active: false, mode: 'add' })
+  const [openForm, setOpenForm] = useState<
+    IOpenFormWithMode<ILecturerInResponse>
+  >({ active: false, mode: 'add' })
   const [tableData, setTableData] = useState<ILecturerInResponse[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
@@ -33,10 +34,19 @@ const LecturerV: FC = () => {
   useEffect(() => {
     ;(async () => {
       setIsLoading(true)
-      const res = await getListLecturers({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search: search || undefined, sort, sort_by: sortBy })
+      const res = await getListLecturers({
+        page_index: tableQueries.current,
+        page_size: tableQueries.pageSize,
+        search: search || undefined,
+        sort,
+        sort_by: sortBy,
+      })
       if (!isEmpty(res)) {
         setTableData(res.data)
-        setPaging({ current: res.pagination.page_index, total: res.pagination.total })
+        setPaging({
+          current: res.pagination.page_index,
+          total: res.pagination.total,
+        })
       }
       setIsLoading(false)
     })()
@@ -48,7 +58,8 @@ const LecturerV: FC = () => {
       dataIndex: 'index',
       key: 'index',
       width: '60px',
-      render: (_text, _record, index) => index + 1 + (paging.current - 1) * tableQueries.pageSize,
+      render: (_text, _record, index) =>
+        index + 1 + (paging.current - 1) * tableQueries.pageSize,
     },
     {
       title: 'Họ tên',
@@ -74,14 +85,18 @@ const LecturerV: FC = () => {
       dataIndex: 'created_at',
       key: 'created_at',
       sorter: true,
-      render: (text) => <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>,
+      render: (text) => (
+        <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>
+      ),
     },
     {
       title: 'Ngày sửa',
       dataIndex: 'updated_at',
       key: 'updated_at',
       sorter: true,
-      render: (text) => <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>,
+      render: (text) => (
+        <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>
+      ),
     },
   ]
 
@@ -93,7 +108,11 @@ const LecturerV: FC = () => {
     setSearch(val)
   }
 
-  const handleTableChange: TableProps<ILecturerInResponse>['onChange'] = (_pagination, _filters, sorter) => {
+  const handleTableChange: TableProps<ILecturerInResponse>['onChange'] = (
+    _pagination,
+    _filters,
+    sorter
+  ) => {
     if (!isArray(sorter) && sorter?.order) {
       setSort(sorter.order as ESort)
       setSortBy(sorter.field as string)
@@ -104,9 +123,15 @@ const LecturerV: FC = () => {
   }
 
   return (
-    <div className='min-h-[calc(100vh-48px)] bg-[#d8ecef42] p-6 shadow-lg'>
+    <>
       <div className='mb-4 flex flex-wrap gap-3'>
-        <Input.Search className='w-60' placeholder='Tìm kiếm' size='large' onSearch={onSearch} allowClear />
+        <Input.Search
+          className='w-60'
+          placeholder='Tìm kiếm'
+          size='large'
+          onSearch={onSearch}
+          allowClear
+        />
       </div>
 
       <Table
@@ -144,8 +169,10 @@ const LecturerV: FC = () => {
         showQuickJumper
         showSizeChanger
       />
-      {openForm.active && openForm.mode === 'view' && <ModalView open={openForm} setOpen={setOpenForm} />}
-    </div>
+      {openForm.active && openForm.mode === 'view' && (
+        <ModalView open={openForm} setOpen={setOpenForm} />
+      )}
+    </>
   )
 }
 
