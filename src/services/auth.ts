@@ -6,5 +6,8 @@ export const APILogin = ({
   email,
   password,
 }: ILoginRequest): Promise<ILoginResponse> => {
-  return post(API_LIST.auth.login, { email, password })
+  const formData = new FormData()
+  formData.append('username', email)
+  formData.append('password', password)
+  return post(API_LIST.auth.login, formData)
 }
