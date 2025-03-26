@@ -37,4 +37,5 @@ export const API_LIST = {
   student: '/api/v1/student/students',
   registration: '/api/v1/student/subjects/registration',
   manageForm: '/api/v1/manage-form',
+  getDailyBibleQuotes: '/api/v1/student/daily-bible/daily-quotes',
 }
