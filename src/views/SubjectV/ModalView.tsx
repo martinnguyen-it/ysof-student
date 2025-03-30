@@ -73,6 +73,7 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
                         <Avatar.Group className='flex items-center'>
                           <img
                             className='mr-4 size-7 object-cover'
+                            referrerPolicy='no-referrer'
                             src={`https://drive-thirdparty.googleusercontent.com/64/type/${item?.mimeType}`}
                           ></img>
                           <Link

@@ -70,6 +70,7 @@ const DocumentV: FC = () => {
         return (
           <Avatar.Group className='flex items-center'>
             <img
+              referrerPolicy='no-referrer'
               className='mr-4 size-7 object-cover'
               src={`https://drive-thirdparty.googleusercontent.com/64/type/${record?.mimeType}`}
             ></img>
