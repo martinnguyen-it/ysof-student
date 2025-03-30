@@ -1,6 +1,10 @@
-import { ILoginRequest, ILoginResponse } from '@/domain/auth/type'
+import {
+  ILoginRequest,
+  ILoginResponse,
+  IChangePassword,
+} from '@/domain/auth/type'
 import { API_LIST } from '@/constants/index'
-import { post } from './HTTPService'
+import { post, put } from './HTTPService'
 
 export const APILogin = ({
   email,
@@ -11,3 +15,6 @@ export const APILogin = ({
   formData.append('password', password)
   return post(API_LIST.auth.login, formData)
 }
+
+export const updatePassword = (data: IChangePassword): Promise<string> =>
+  put(API_LIST.auth.changePassword, data)

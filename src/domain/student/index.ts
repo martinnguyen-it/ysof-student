@@ -1,8 +1,6 @@
 import { IPaginationAPI, IPaginationAPIParams, ISort } from '@/domain/common'
 
 export interface IStudentInResponse {
-  numerical_order: number
-  group: number
   holy_name: string
   full_name: string
   email: string
@@ -16,7 +14,20 @@ export interface IStudentInResponse {
 
 export interface IStudentMeInResponse
   extends Omit<IStudentInResponse, 'season_info'> {
+  date_of_birth?: string
+  origin_address?: string
+  education?: string
+  job?: string
   seasons_info: IStudentSeasonInfo[]
+}
+
+export interface IUpdateMe {
+  sex?: ESex
+  diocese?: string
+  phone_number?: string
+  origin_address?: string
+  education?: string
+  job?: string
 }
 
 export interface IStudentSeasonInfo {

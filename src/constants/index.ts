@@ -24,6 +24,7 @@ export const DEFAULT_GET_LIST_QUERY = {
 export const API_LIST = {
   auth: {
     login: '/api/v1/student/auth/login',
+    changePassword: '/api/v1/student/auth/change-password',
   },
   getMe: '/api/v1/student/students/me',
   season: '/api/v1/seasons',
@@ -38,4 +39,8 @@ export const API_LIST = {
   registration: '/api/v1/student/subjects/registration',
   manageForm: '/api/v1/manage-form',
   getDailyBibleQuotes: '/api/v1/student/daily-bible/daily-quotes',
+  me: '/api/v1/student/students/me',
+  updateAvatar: '/api/v1/student/students/me/avatar',
 }
+
+export const MAX_AVATAR_SIZE = 200 * 1024 // 200KB
