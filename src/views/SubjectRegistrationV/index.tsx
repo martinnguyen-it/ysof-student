@@ -25,15 +25,18 @@ const SubjectRegistrationV: FC = () => {
   } = useGetManageForm(EManageFormType.SUBJECT_REGISTRATION)
   const { data: listSubjects, isLoading: isLoadingSubject } =
     useGetListSubjects({ season: currentSeason?.season })
-  const { data: dataSubjectRegistration, isLoading: isLoadingRegistration } =
-    useGetSubjectRegistration(isFetched)
+  const {
+    data: dataSubjectRegistration,
+    isLoading: isLoadingRegistration,
+    isFetched: isFetchedRegistration,
+  } = useGetSubjectRegistration(isFetched)
 
   useEffect(() => {
     if (dataSubjectRegistration) {
       setValue(dataSubjectRegistration.subjects_registration)
       setInitValue(dataSubjectRegistration.subjects_registration)
     }
-  }, [currentSeason])
+  }, [currentSeason, dataSubjectRegistration])
 
   const isUpdateForm = !!dataSubjectRegistration
 
@@ -155,7 +158,9 @@ const SubjectRegistrationV: FC = () => {
 
                   <div>
                     <Button
-                      disabled={isEqual(initValue, value)}
+                      disabled={
+                        isEqual(initValue, value) || !isFetchedRegistration
+                      }
                       loading={isPending}
                       className='mt-2'
                       onClick={onSubmit}

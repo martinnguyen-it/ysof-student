@@ -28,6 +28,9 @@ const AuthenticatedTaiKhoanLazyImport = createFileRoute(
 const AuthenticatedLuongGiaLazyImport = createFileRoute(
   '/_authenticated/luong-gia',
 )()
+const AuthenticatedDiemDanhLazyImport = createFileRoute(
+  '/_authenticated/diem-danh',
+)()
 const AuthenticatedDanhSachHocVienLazyImport = createFileRoute(
   '/_authenticated/danh-sach-hoc-vien',
 )()
@@ -42,10 +45,10 @@ const errors500LazyImport = createFileRoute('/(errors)/500')()
 const errors404LazyImport = createFileRoute('/(errors)/404')()
 const errors403LazyImport = createFileRoute('/(errors)/403')()
 const errors401LazyImport = createFileRoute('/(errors)/401')()
-const authSignInLazyImport = createFileRoute('/(auth)/sign-in')()
 const authForgotPasswordLazyImport = createFileRoute(
   '/(auth)/forgot-password',
 )()
+const authDangNhapLazyImport = createFileRoute('/(auth)/dang-nhap')()
 
 // Create/Update Routes
 
@@ -85,6 +88,14 @@ const AuthenticatedLuongGiaLazyRoute = AuthenticatedLuongGiaLazyImport.update({
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any).lazy(() =>
   import('./routes/_authenticated/luong-gia.lazy').then((d) => d.Route),
+)
+
+const AuthenticatedDiemDanhLazyRoute = AuthenticatedDiemDanhLazyImport.update({
+  id: '/diem-danh',
+  path: '/diem-danh',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any).lazy(() =>
+  import('./routes/_authenticated/diem-danh.lazy').then((d) => d.Route),
 )
 
 const AuthenticatedDanhSachHocVienLazyRoute =
@@ -159,14 +170,6 @@ const errors401LazyRoute = errors401LazyImport
   } as any)
   .lazy(() => import('./routes/(errors)/401.lazy').then((d) => d.Route))
 
-const authSignInLazyRoute = authSignInLazyImport
-  .update({
-    id: '/(auth)/sign-in',
-    path: '/sign-in',
-    getParentRoute: () => rootRoute,
-  } as any)
-  .lazy(() => import('./routes/(auth)/sign-in.lazy').then((d) => d.Route))
-
 const authForgotPasswordLazyRoute = authForgotPasswordLazyImport
   .update({
     id: '/(auth)/forgot-password',
@@ -176,6 +179,14 @@ const authForgotPasswordLazyRoute = authForgotPasswordLazyImport
   .lazy(() =>
     import('./routes/(auth)/forgot-password.lazy').then((d) => d.Route),
   )
+
+const authDangNhapLazyRoute = authDangNhapLazyImport
+  .update({
+    id: '/(auth)/dang-nhap',
+    path: '/dang-nhap',
+    getParentRoute: () => rootRoute,
+  } as any)
+  .lazy(() => import('./routes/(auth)/dang-nhap.lazy').then((d) => d.Route))
 
 const auth500Route = auth500Import.update({
   id: '/(auth)/500',
@@ -201,18 +212,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof auth500Import
       parentRoute: typeof rootRoute
     }
+    '/(auth)/dang-nhap': {
+      id: '/(auth)/dang-nhap'
+      path: '/dang-nhap'
+      fullPath: '/dang-nhap'
+      preLoaderRoute: typeof authDangNhapLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/(auth)/forgot-password': {
       id: '/(auth)/forgot-password'
       path: '/forgot-password'
       fullPath: '/forgot-password'
       preLoaderRoute: typeof authForgotPasswordLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/(auth)/sign-in': {
-      id: '/(auth)/sign-in'
-      path: '/sign-in'
-      fullPath: '/sign-in'
-      preLoaderRoute: typeof authSignInLazyImport
       parentRoute: typeof rootRoute
     }
     '/(errors)/401': {
@@ -271,6 +282,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDanhSachHocVienLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/diem-danh': {
+      id: '/_authenticated/diem-danh'
+      path: '/diem-danh'
+      fullPath: '/diem-danh'
+      preLoaderRoute: typeof AuthenticatedDiemDanhLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/luong-gia': {
       id: '/_authenticated/luong-gia'
       path: '/luong-gia'
@@ -308,6 +326,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDangKyHocLazyRoute: typeof AuthenticatedDangKyHocLazyRoute
   AuthenticatedDanhSachChuDeLazyRoute: typeof AuthenticatedDanhSachChuDeLazyRoute
   AuthenticatedDanhSachHocVienLazyRoute: typeof AuthenticatedDanhSachHocVienLazyRoute
+  AuthenticatedDiemDanhLazyRoute: typeof AuthenticatedDiemDanhLazyRoute
   AuthenticatedLuongGiaLazyRoute: typeof AuthenticatedLuongGiaLazyRoute
   AuthenticatedTaiKhoanLazyRoute: typeof AuthenticatedTaiKhoanLazyRoute
   AuthenticatedXinNghiPhepLazyRoute: typeof AuthenticatedXinNghiPhepLazyRoute
@@ -318,6 +337,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDangKyHocLazyRoute: AuthenticatedDangKyHocLazyRoute,
   AuthenticatedDanhSachChuDeLazyRoute: AuthenticatedDanhSachChuDeLazyRoute,
   AuthenticatedDanhSachHocVienLazyRoute: AuthenticatedDanhSachHocVienLazyRoute,
+  AuthenticatedDiemDanhLazyRoute: AuthenticatedDiemDanhLazyRoute,
   AuthenticatedLuongGiaLazyRoute: AuthenticatedLuongGiaLazyRoute,
   AuthenticatedTaiKhoanLazyRoute: AuthenticatedTaiKhoanLazyRoute,
   AuthenticatedXinNghiPhepLazyRoute: AuthenticatedXinNghiPhepLazyRoute,
@@ -330,8 +350,8 @@ const AuthenticatedRouteRouteWithChildren =
 export interface FileRoutesByFullPath {
   '': typeof AuthenticatedRouteRouteWithChildren
   '/500': typeof errors500LazyRoute
+  '/dang-nhap': typeof authDangNhapLazyRoute
   '/forgot-password': typeof authForgotPasswordLazyRoute
-  '/sign-in': typeof authSignInLazyRoute
   '/401': typeof errors401LazyRoute
   '/403': typeof errors403LazyRoute
   '/404': typeof errors404LazyRoute
@@ -339,6 +359,7 @@ export interface FileRoutesByFullPath {
   '/dang-ky-hoc': typeof AuthenticatedDangKyHocLazyRoute
   '/danh-sach-chu-de': typeof AuthenticatedDanhSachChuDeLazyRoute
   '/danh-sach-hoc-vien': typeof AuthenticatedDanhSachHocVienLazyRoute
+  '/diem-danh': typeof AuthenticatedDiemDanhLazyRoute
   '/luong-gia': typeof AuthenticatedLuongGiaLazyRoute
   '/tai-khoan': typeof AuthenticatedTaiKhoanLazyRoute
   '/xin-nghi-phep': typeof AuthenticatedXinNghiPhepLazyRoute
@@ -347,8 +368,8 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/500': typeof errors500LazyRoute
+  '/dang-nhap': typeof authDangNhapLazyRoute
   '/forgot-password': typeof authForgotPasswordLazyRoute
-  '/sign-in': typeof authSignInLazyRoute
   '/401': typeof errors401LazyRoute
   '/403': typeof errors403LazyRoute
   '/404': typeof errors404LazyRoute
@@ -356,6 +377,7 @@ export interface FileRoutesByTo {
   '/dang-ky-hoc': typeof AuthenticatedDangKyHocLazyRoute
   '/danh-sach-chu-de': typeof AuthenticatedDanhSachChuDeLazyRoute
   '/danh-sach-hoc-vien': typeof AuthenticatedDanhSachHocVienLazyRoute
+  '/diem-danh': typeof AuthenticatedDiemDanhLazyRoute
   '/luong-gia': typeof AuthenticatedLuongGiaLazyRoute
   '/tai-khoan': typeof AuthenticatedTaiKhoanLazyRoute
   '/xin-nghi-phep': typeof AuthenticatedXinNghiPhepLazyRoute
@@ -366,8 +388,8 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/(auth)/500': typeof auth500Route
+  '/(auth)/dang-nhap': typeof authDangNhapLazyRoute
   '/(auth)/forgot-password': typeof authForgotPasswordLazyRoute
-  '/(auth)/sign-in': typeof authSignInLazyRoute
   '/(errors)/401': typeof errors401LazyRoute
   '/(errors)/403': typeof errors403LazyRoute
   '/(errors)/404': typeof errors404LazyRoute
@@ -376,6 +398,7 @@ export interface FileRoutesById {
   '/_authenticated/dang-ky-hoc': typeof AuthenticatedDangKyHocLazyRoute
   '/_authenticated/danh-sach-chu-de': typeof AuthenticatedDanhSachChuDeLazyRoute
   '/_authenticated/danh-sach-hoc-vien': typeof AuthenticatedDanhSachHocVienLazyRoute
+  '/_authenticated/diem-danh': typeof AuthenticatedDiemDanhLazyRoute
   '/_authenticated/luong-gia': typeof AuthenticatedLuongGiaLazyRoute
   '/_authenticated/tai-khoan': typeof AuthenticatedTaiKhoanLazyRoute
   '/_authenticated/xin-nghi-phep': typeof AuthenticatedXinNghiPhepLazyRoute
@@ -387,8 +410,8 @@ export interface FileRouteTypes {
   fullPaths:
     | ''
     | '/500'
+    | '/dang-nhap'
     | '/forgot-password'
-    | '/sign-in'
     | '/401'
     | '/403'
     | '/404'
@@ -396,6 +419,7 @@ export interface FileRouteTypes {
     | '/dang-ky-hoc'
     | '/danh-sach-chu-de'
     | '/danh-sach-hoc-vien'
+    | '/diem-danh'
     | '/luong-gia'
     | '/tai-khoan'
     | '/xin-nghi-phep'
@@ -403,8 +427,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/500'
+    | '/dang-nhap'
     | '/forgot-password'
-    | '/sign-in'
     | '/401'
     | '/403'
     | '/404'
@@ -412,6 +436,7 @@ export interface FileRouteTypes {
     | '/dang-ky-hoc'
     | '/danh-sach-chu-de'
     | '/danh-sach-hoc-vien'
+    | '/diem-danh'
     | '/luong-gia'
     | '/tai-khoan'
     | '/xin-nghi-phep'
@@ -420,8 +445,8 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_authenticated'
     | '/(auth)/500'
+    | '/(auth)/dang-nhap'
     | '/(auth)/forgot-password'
-    | '/(auth)/sign-in'
     | '/(errors)/401'
     | '/(errors)/403'
     | '/(errors)/404'
@@ -430,6 +455,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dang-ky-hoc'
     | '/_authenticated/danh-sach-chu-de'
     | '/_authenticated/danh-sach-hoc-vien'
+    | '/_authenticated/diem-danh'
     | '/_authenticated/luong-gia'
     | '/_authenticated/tai-khoan'
     | '/_authenticated/xin-nghi-phep'
@@ -440,8 +466,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   auth500Route: typeof auth500Route
+  authDangNhapLazyRoute: typeof authDangNhapLazyRoute
   authForgotPasswordLazyRoute: typeof authForgotPasswordLazyRoute
-  authSignInLazyRoute: typeof authSignInLazyRoute
   errors401LazyRoute: typeof errors401LazyRoute
   errors403LazyRoute: typeof errors403LazyRoute
   errors404LazyRoute: typeof errors404LazyRoute
@@ -452,8 +478,8 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   auth500Route: auth500Route,
+  authDangNhapLazyRoute: authDangNhapLazyRoute,
   authForgotPasswordLazyRoute: authForgotPasswordLazyRoute,
-  authSignInLazyRoute: authSignInLazyRoute,
   errors401LazyRoute: errors401LazyRoute,
   errors403LazyRoute: errors403LazyRoute,
   errors404LazyRoute: errors404LazyRoute,
@@ -473,8 +499,8 @@ export const routeTree = rootRoute
       "children": [
         "/_authenticated",
         "/(auth)/500",
+        "/(auth)/dang-nhap",
         "/(auth)/forgot-password",
-        "/(auth)/sign-in",
         "/(errors)/401",
         "/(errors)/403",
         "/(errors)/404",
@@ -488,6 +514,7 @@ export const routeTree = rootRoute
         "/_authenticated/dang-ky-hoc",
         "/_authenticated/danh-sach-chu-de",
         "/_authenticated/danh-sach-hoc-vien",
+        "/_authenticated/diem-danh",
         "/_authenticated/luong-gia",
         "/_authenticated/tai-khoan",
         "/_authenticated/xin-nghi-phep",
@@ -497,11 +524,11 @@ export const routeTree = rootRoute
     "/(auth)/500": {
       "filePath": "(auth)/500.tsx"
     },
+    "/(auth)/dang-nhap": {
+      "filePath": "(auth)/dang-nhap.lazy.tsx"
+    },
     "/(auth)/forgot-password": {
       "filePath": "(auth)/forgot-password.lazy.tsx"
-    },
-    "/(auth)/sign-in": {
-      "filePath": "(auth)/sign-in.lazy.tsx"
     },
     "/(errors)/401": {
       "filePath": "(errors)/401.lazy.tsx"
@@ -528,6 +555,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/danh-sach-hoc-vien": {
       "filePath": "_authenticated/danh-sach-hoc-vien.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/diem-danh": {
+      "filePath": "_authenticated/diem-danh.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/luong-gia": {

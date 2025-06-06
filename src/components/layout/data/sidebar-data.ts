@@ -1,5 +1,6 @@
 import { IconLayoutDashboard } from '@tabler/icons-react'
 import { UserOutlined } from '@ant-design/icons'
+import { ScrollText } from 'lucide-react'
 import {
   AbsentIcon,
   LessonIcon,
@@ -23,6 +24,11 @@ export const sidebarData: NavItem[] = [
     title: 'Danh sách chủ đề',
     icon: LessonIcon,
     url: '/danh-sach-chu-de',
+  },
+  {
+    title: 'Điểm danh',
+    icon: ScrollText,
+    url: '/diem-danh',
   },
   {
     title: 'Lượng giá',

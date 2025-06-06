@@ -30,6 +30,12 @@ export interface IZoomInfo {
   link?: string
 }
 
+export interface ISubjectShortInResponse {
+  title: string
+  code: string
+  id: string
+}
+
 export enum ESubjectStatus {
   INIT = 'init',
   SENT_NOTIFICATION = 'sent_notification',
