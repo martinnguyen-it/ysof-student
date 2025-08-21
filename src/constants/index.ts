@@ -46,4 +46,4 @@ export const API_LIST = {
   updateAvatar: '/api/v1/student/students/me/avatar',
 }
 
-export const MAX_AVATAR_SIZE = 80 * 1024 // 80KB
+export const MAX_AVATAR_SIZE = 120 * 1024 // 120KB
