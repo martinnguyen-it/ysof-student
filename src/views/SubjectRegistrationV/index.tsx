@@ -1,4 +1,4 @@
-import { FC, ReactNode, useEffect, useMemo, useState } from 'react'
+import { FC, Fragment, ReactNode, useEffect, useMemo, useState } from 'react'
 import { useGetManageForm } from '@/apis/manageForm/useQueryManageForm'
 import { usePostSubjectRegistration } from '@/apis/registration/useMutationRegistration'
 import { useGetSubjectRegistration } from '@/apis/registration/useQueryRegistration'
@@ -15,7 +15,7 @@ const SubjectRegistrationV: FC = () => {
   const currentSeason = useRecoilValue(currentSeasonState)
   const [value, setValue] = useState<string[]>([])
   const [initValue, setInitValue] = useState<string[]>()
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   const [error, setError] = useState<string>()
 
   const {
@@ -54,10 +54,10 @@ const SubjectRegistrationV: FC = () => {
   const { mutate, isPending } = usePostSubjectRegistration(onSuccess)
 
   const onSubmit = async () => {
-    // if (size(value) < 15) {
-    //   setError('Bạn phải đăng ký ít nhất 15 chủ đề.')
-    //   return
-    // }
+    if (size(value) < 15) {
+      setError('Bạn phải đăng ký ít nhất 15 chủ đề.')
+      return
+    }
 
     mutate({ subjects: value })
   }
@@ -110,9 +110,16 @@ const SubjectRegistrationV: FC = () => {
                 ĐĂNG KÝ MÔN HỌC - YSOF {currentSeason?.academic_year}
               </div>
               <div className='mt-4 px-10'>
-                <p
-                  dangerouslySetInnerHTML={{ __html: dataForm?.data?.content }}
-                />
+                <p>
+                  {(dataForm?.data?.content || '')
+                    .split('\n')
+                    .map((line: string, idx: number) => (
+                      <Fragment key={idx}>
+                        {line}
+                        <br />
+                      </Fragment>
+                    ))}
+                </p>
                 Nếu gặp trở ngại với đường link đăng ký môn học, bạn hãy phản
                 hồi với chúng tôi qua địa chỉ email YSOF:{' '}
                 <a className='text-blue-500' href='mailto:ysofsj@gmail.com'>

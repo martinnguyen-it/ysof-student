@@ -93,7 +93,6 @@ const RollCallV: FC = () => {
         pagination={false}
         dataSource={data?.subjects || []}
         loading={isLoading}
-        scroll={{ x: 1200 }}
         bordered
       />
     </>

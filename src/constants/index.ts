@@ -25,6 +25,9 @@ export const API_LIST = {
   auth: {
     login: '/api/v1/student/auth/login',
     changePassword: '/api/v1/student/auth/change-password',
+    forgotPassword: '/api/v1/student/auth/forgot-password',
+    verifyOTP: '/api/v1/student/auth/verify-otp',
+    resetPassword: '/api/v1/student/auth/reset-password',
   },
   getMe: '/api/v1/student/students/me',
   season: '/api/v1/seasons',
@@ -43,4 +46,4 @@ export const API_LIST = {
   updateAvatar: '/api/v1/student/students/me/avatar',
 }
 
-export const MAX_AVATAR_SIZE = 200 * 1024 // 200KB
+export const MAX_AVATAR_SIZE = 80 * 1024 // 80KB

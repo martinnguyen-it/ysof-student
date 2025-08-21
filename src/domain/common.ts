@@ -24,3 +24,7 @@ export interface IPaginationAPI {
   page_index: number
   total_pages: number
 }
+
+export interface IBaseResponse {
+  message: string
+}

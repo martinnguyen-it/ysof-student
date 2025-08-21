@@ -49,7 +49,7 @@ const UpdateInfo = () => {
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhâp tên thánh',
+              message: 'Vui lòng nhập tên thánh',
             },
           ]}
         >
@@ -73,7 +73,7 @@ const UpdateInfo = () => {
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhâp email',
+              message: 'Vui lòng nhập email',
             },
             {
               type: 'email',
@@ -89,7 +89,8 @@ const UpdateInfo = () => {
           rules={[{ required: true, message: 'Vui lòng chọn ngày sinh' }]}
         >
           <DatePicker
-            format={'DD/MM/YYYY'}
+            format='DD/MM/YYYY'
+            placeholder='DD/MM/YYYY'
             disabled
             style={{ width: '100%' }}
           />

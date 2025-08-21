@@ -49,7 +49,19 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
               <span className='mr-2 text-base font-medium'>
                 Link câu hỏi gửi giảng viên:
               </span>
-              <span>{open.item?.question_url || 'Chưa có thông tin'}</span>
+              <span>
+                {open.item?.question_url ? (
+                  <Link
+                    to={open.item.question_url}
+                    target='_blank'
+                    className='text-blue-500'
+                  >
+                    {open.item.question_url}
+                  </Link>
+                ) : (
+                  'Chưa có thông tin'
+                )}
+              </span>
             </Card>
             <Card>
               <span className='mr-2 text-base font-medium'>Ngày học:</span>
